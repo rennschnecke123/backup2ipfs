@@ -1,0 +1,78 @@
+#!/bin/bash
+
+
+
+mode=$1
+
+
+if [ "$mode" == "" ];
+then
+	mode="--help"
+fi
+
+
+if [ "$mode" == "--help" ];
+then
+	echo "Syntax:"
+	echo "backup2ipfs --copy"
+	echo " copy data to ipfs"
+	echo "backup2ipfs --move"
+	echo " mv data to ipfs and replace them by a symbolic link"
+	echo "backup2ipfs --rebuild"
+	echo " get symbolic links from url list"
+	echo "backup2ipfs --pinning"
+	echo " pin ipfs data from url list"
+	echo ""
+	echo " for symbolic links ipfs need to be started with mount option!"
+	echo " ipfs daemon --mount &"
+	exit 0
+fi
+
+
+# recreate local list
+cp -f ipfs-urls.txt ipfs-urls.txt.tmp && mv -f ipfs-urls.txt.tmp ipfs-urls.txt
+
+# read old urls
+urls=$(cat ipfs-urls.txt)
+
+if [ "$mode" != "--rebuild" ] && [ "$mode" != "--pinning" ];
+then
+	# push to ipfs
+	for item in $(find -mindepth 1 -maxdepth 1 -not -type l)
+	do
+		echo $item
+		ID=$(ipfs add -rw "$item"| tail -n1 | cut -d ' ' -f 2)
+		echo $ID
+		if [ "$ID" != "" ];
+		then
+			if [ "$mode" == "--move" ];
+			then
+				rm -rf "$item"
+			fi
+			urls=$(echo -e "$urls\n$ID/$item")
+			echo "$ID/$item" >> ipfs-urls.txt
+		fi
+	done
+fi
+
+echo -e "$urls" | sort | uniq > ipfs-urls.txt
+
+if [ "$mode" != "--pinning" ];
+then
+	# symb links
+	for allIDs in $(cat ipfs-urls.txt);
+	do
+		cp -vans "/ipfs/$allIDs" ./ 2>/dev/null
+		if [ "$mode" == "--copy" ];
+		then
+			find -type l -print -exec cp "{}" "{}.tmp" \; -exec mv "{}.tmp" "{}" \; 2>/dev/null
+		fi
+	done
+else
+	for data in $(cat ipfs-urls.txt | cut -d ";" -f1 | grep Qm | sed "s/\\\"//g");
+	do
+        	echo $data;
+	        ipfs pin add --progress $data
+	done
+fi
+
