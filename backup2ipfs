@@ -69,7 +69,6 @@ then
 	done
 	if [ "$mode" == "--copy" ] || [ "$mode" == "--rebuild" ];
 	then
-		echo "haha"
 		find -type l -print -exec cp "{}" "{}.tmp" \; -exec mv "{}.tmp" "{}" \;  2>/dev/null
 	fi
 else
