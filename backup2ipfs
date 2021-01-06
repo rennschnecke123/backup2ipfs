@@ -4,6 +4,12 @@
 
 mode=$1
 
+# ipfs+ipns 
+ipfsDIR=/ipfs
+ipnsDIR=/ipns
+
+
+IFS=$'\n'
 
 if [ "$mode" == "" ];
 then
@@ -65,7 +71,7 @@ then
 	for allIDs in $(cat ipfs-urls.txt);
 	do
 		echo $allIDs
-		cp -vans "/ipfs/$allIDs" ./  >/dev/null || exit 1
+		(cp -vans "$ipfsDIR/$allIDs" ./  >/dev/null 2>&1) || (wget -nH -c -B http://localhost:8080/ipfs/ -i ipfs-urls.txt >/dev/null 2>&1) || (wget -nH -c -B https://ipfs.io/ipfs/ -i ipfs-urls.txt >/dev/null 2>&1)
 	done
 	if [ "$mode" == "--copy" ] || [ "$mode" == "--rebuild" ];
 	then
@@ -78,4 +84,3 @@ else
 	        ipfs pin add --progress $data || exit 1
 	done
 fi
-
