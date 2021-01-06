@@ -71,7 +71,7 @@ then
 	for allIDs in $(cat ipfs-urls.txt);
 	do
 		echo $allIDs
-		(cp -vans "$ipfsDIR/$allIDs" ./  >/dev/null 2>&1) || (wget -nH --cut-dirs=2 -r -B http://localhost:8080/ipfs/ -i ipfs-urls.txt >/dev/null 2>&1) || (wget -nH --cut-dirs=2 -r -B https://ipfs.io/ipfs/ -i ipfs-urls.txt >/dev/null 2>&1)
+		(cp -vans "$ipfsDIR/$allIDs" ./  >/dev/null 2>&1) || (wget -nH --cut-dirs=2 -r -B http://localhost:8080/ipfs/ -i ipfs-urls.txt 2>/dev/null) || (wget -nH --cut-dirs=2 -r -B https://ipfs.io/ipfs/ -i ipfs-urls.txt 2>/dev/null)
 	done
 	if [ "$mode" == "--copy" ] || [ "$mode" == "--rebuild" ];
 	then
