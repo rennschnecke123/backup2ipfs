@@ -44,7 +44,7 @@ urls=$(cat ipfs-urls.txt)
 if [ "$mode" != "--rebuild" ] && [ "$mode" != "--pinning" ];
 then
 	# push to ipfs
-	for item in $(find -mindepth 1 -maxdepth 1 -not -type l)
+	for item in $(find -mindepth 1 -type f)
 	do
 		echo $item
 		ID=$(ipfs add -rw "$item" 2>/dev/null| tail -n1 | cut -d ' ' -f 2)
