@@ -64,6 +64,10 @@ then
 fi
 
 echo -e "$urls" | sort | uniq > ipfs-urls.txt
+cat << EOF >> ipfs-urls.txt
+
+# created with backup2ipfs - https://github.com/rennschnecke123/backup2ipfs
+EOF
 
 if [ "$mode" != "--pinning" ];
 then
