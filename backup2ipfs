@@ -12,7 +12,7 @@ ipnsDIR=/ipns
 
 IFS=$'\n'
 
-if [ "$mode" == "" ];
+if [ "$mode" != "--help" ] && [ "$mode" != "copy" ] && [ "$mode" != "move" ] && [ "$mode" != "rebuild" ] && [ "$mode" != "pin" ];
 then
 	mode="--help"
 fi
