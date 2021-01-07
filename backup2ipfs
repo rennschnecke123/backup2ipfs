@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# by R.Rusch, https://keybase.io/reinerrusch
+
 
 mode=$1
 
@@ -81,7 +81,7 @@ then
 			echo "$filePATH"
 			createPATH=$(echo $filePATH | rev | cut -d'/' -f2- | rev)
 			mkdir -p "$createPATH" >/dev/null 2>&1
-			(cp -vans "$ipfsDIR/$allIDs" ./  >/dev/null 2>&1) || (/usr/bin/wget -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID") || (/usr/bin/wget -nc -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID")
+			(cp -vans "$ipfsDIR/$allIDs" ./  >/dev/null 2>&1) || (wget -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" 2>/dev/null) || (wget -nc -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID" 2>/dev/null)
 		fi
 	done
 	if [ "$mode" == "copy" ] || [ "$mode" == "rebuild" ];
