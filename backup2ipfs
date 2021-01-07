@@ -1,6 +1,6 @@
 #!/bin/bash
 
-
+# by R.Rusch, https://keybase.io/reinerrusch
 
 mode=$1
 
