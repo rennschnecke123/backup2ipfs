@@ -1,3 +1,12 @@
+###########################################################
+# demo file to retrieve data from ipfs
+#
+# this will download "acb" via "backup2ipfs"
+#
+# store file to any testing folder
+# and then:
+# ->  backup2ipfs rebuild
+##########################################################
 
 # created with backup2ipfs - https://github.com/rennschnecke123/backup2ipfs
 Qmc6n92e8BymL2ktbKFRUjJasTUoVCQTfBNNup7219862i;./little helper/acb_restore.sh
