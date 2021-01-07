@@ -6,7 +6,6 @@ Qmcn4ubwnnrpAymCfaadvx24LLYN3tmCoYgmot7QqRnnNf;./adHoc/acb.sh
 QmeJqZ1U7qdAtGzmbzZ1JPcWXCrNbMmgLZtXYApoCBCTrY;./acb.png
 QmeJqZ1U7qdAtGzmbzZ1JPcWXCrNbMmgLZtXYApoCBCTrY;./adHoc/acb.png
 QmQpCi5G64jAzaMcP6mnKNTnEkQzyHGPQArvRRBtSTPqXS;./little helper/readme-helper.txt
-QmRGen95uTJSGDf6hXbwWnTbMy8sS6WU3sTieQvJ9upUyM;./.syncStatus
 QmVLPBFgBiKKU7mG1uWkQktjL7Y3Hr1QPY9xvzFtE4hM4L;./demo.txt
 QmW8Phm2BKdGcpgzzfVW55whWhYoUd2WtNuwQ4GLAmjEjE;./little helper/acb_history.sh
 QmWBQTj885q2SzbU2GQZDv7wN8EjFahW2Wj1e9jPrPJsQV;./adHoc/adhocBackup.sh
