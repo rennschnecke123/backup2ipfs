@@ -1,9 +1,9 @@
 # backup2ipfs
 
 Syntax:<br>
-<br>
 backup2ipfs &lt;command&gt;<br>
-copies data recursive from current directory to ipfs<br>
+copies data recursive from current directory to ipfs<br><br>
+
 *Be aware that ipfs is readable by anyone!!!*<br>
 So just store public or encrypted data!<br><br>
 
