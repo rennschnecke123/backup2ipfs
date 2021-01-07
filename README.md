@@ -1,18 +1,15 @@
 # backup2ipfs
 
 Syntax:<br>
+backup2ipfs copy<br>
+-&gt; copy data to ipfs<br>
+backup2ipfs move<br>
+-&gt; move data to ipfs<br>
+backup2ipfs rebuild<br>
+-&gt; get data from ipfs<br>
+backup2ipfs pin<br>
+-&gt; pin data to local ipfs server<br>
 <br>
-backup2ipfs --copy<br>
- &nbsp;copy data to ipfs<br>
-backup2ipfs --move<br>
- &nbsp;mv data to ipfs and replace them by a symbolic link<br>
-backup2ipfs --rebuild<br>
- &nbsp;get symbolic links from url list<br>
-backup2ipfs --pinning<br>
- &nbsp;pin ipfs data from url list<br>
-<br>
- &nbsp;for symbolic links ipfs need to be started with mount option!<br>
- &nbsp;ipfs daemon --mount &<br>
- 
- 
+ for symbolic links ipfs need to be started with mount option!<br>
+ ipfs daemon --mount &amp;
  
