@@ -44,10 +44,10 @@ urls=$(cat ipfs-urls.txt)
 if [ "$mode" != "rebuild" ] && [ "$mode" != "pin" ];
 then
 	# push to ipfs
-	for item in $(find -mindepth 1 -type f -not -name \#\* -not -name ipfs-urls.txt)
+	for item in $(find ./ -mindepth 1 -type f -not -name \#\* -not -name ipfs-urls.txt)
 	do
 		echo $item
-		ID=$(ipfs add -rw "$item" 2>/dev/null| tail -n1 | cut -d ' ' -f 2)
+		ID=$(ipfs add "$item" 2>/dev/null| tail -n1 | cut -d ' ' -f 2)
 		if [ "$ID" != "" ];
 		then
 			echo "done"
@@ -55,8 +55,8 @@ then
 			then
 				rm -rf "$item"
 			fi
-			urls=$(echo -e "$urls\n$ID/$item")
-			echo "$ID/$item" >> ipfs-urls.txt
+			urls=$(echo -e "$urls\n$ID;$item")
+			echo "$ID;$item" >> ipfs-urls.txt
 		else
 			echo "error"
 		fi
@@ -65,7 +65,6 @@ fi
 
 echo -e "$urls" | sort | uniq > ipfs-urls.txt
 cat << EOF >> ipfs-urls.txt
-
 # created with backup2ipfs - https://github.com/rennschnecke123/backup2ipfs
 EOF
 
@@ -74,10 +73,15 @@ then
 	# symb links
 	for allIDs in $(cat ipfs-urls.txt | grep -v ^\#);
 	do
+		ID=$(echo $allIDs | cut -d';' -f1)
+		filePATH=$(echo $allIDs | cut -d';' -f2)
 		if [ "$mode" == "move" ] || [ "$mode" == "rebuild" ];
 		then
 			echo $allIDs
-			(cp -vans "$ipfsDIR/$allIDs" ./  >/dev/null 2>&1) || (wget -nc -nH --cut-dirs=2 -B http://localhost:8080/ipfs/ -i ipfs-urls.txt 2>/dev/null) || (wget -nc -nH --cut-dirs=2 -B https://ipfs.io/ipfs/ -i ipfs-urls.txt 2>/dev/null)
+			echo "$filePATH"
+			createPATH=$(echo $filePATH | rev | cut -d'/' -f2- | rev)
+			mkdir -p "$createPATH" >/dev/null 2>&1
+			(cp -vans "$ipfsDIR/$allIDs" ./  >/dev/null 2>&1) || (/usr/bin/wget -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID") || (/usr/bin/wget -nc -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID")
 		fi
 	done
 	if [ "$mode" == "copy" ] || [ "$mode" == "rebuild" ];
