@@ -4,6 +4,7 @@
 
 
 mode=$1
+security=$2
 
 # ipfs+ipns 
 ipfsDIR=/ipfs
@@ -23,7 +24,7 @@ then
 	echo "Syntax:"
 	echo "backup2ipfs copy"
 	echo "-> copy data to ipfs"
-	echo "backup2ipfs move"
+	echo "backup2ipfs move (with attempt to symb link)"
 	echo "-> move data to ipfs"
 	echo "backup2ipfs rebuild"
 	echo "-> get data from ipfs"
@@ -32,8 +33,11 @@ then
 	echo ""
 	echo " for symbolic links ipfs need to be started with mount option!"
 	echo " ipfs daemon --mount &"
+	echo ""
+	echo " to store _non_ gpg files, add '--secOFF' as parameter!"
 	exit 0
 fi
+
 
 
 # recreate local list
@@ -45,23 +49,46 @@ urls=$(cat ipfs-urls.txt)
 if [ "$mode" != "rebuild" ] && [ "$mode" != "pin" ];
 then
 	# push to ipfs
-	for item in $(find ./ -mindepth 1 -type f -not -name \#\* -not -name ipfs-urls.txt)
-	do
-		echo $item
-		ID=$(ipfs add "$item" 2>/dev/null| tail -n1 | cut -d ' ' -f 2)
-		if [ "$ID" != "" ];
-		then
-			echo "done"
-			if [ "$mode" == "move" ];
+	# only gpg files!
+	if [ "$security" != "--secOFF" ];
+	then
+		for item in $(find ./ -mindepth 1 -type f -not -name \#\* -name \*.gpg)
+		do
+			echo $item
+			ID=$(ipfs add "$item" 2>/dev/null| tail -n1 | cut -d ' ' -f 2)
+			if [ "$ID" != "" ];
 			then
-				rm -rf "$item"
+				echo "done"
+				if [ "$mode" == "move" ];
+				then
+					rm -rf "$item"
+				fi
+				urls=$(echo -e "$urls\n$ID;$item")
+				echo "$ID;$item" >> ipfs-urls.txt
+			else
+				echo "error"
 			fi
-			urls=$(echo -e "$urls\n$ID;$item")
-			echo "$ID;$item" >> ipfs-urls.txt
-		else
-			echo "error"
-		fi
-	done
+		done
+	else
+	# all files!
+	        for item in $(find ./ -mindepth 1 -type f -not -name \#\* -not -name ipfs-urls.txt)
+        	do
+                	echo $item
+	                ID=$(ipfs add "$item" 2>/dev/null| tail -n1 | cut -d ' ' -f 2)
+        	        if [ "$ID" != "" ];
+                	then
+                        	echo "done"
+	                        if [ "$mode" == "move" ];
+        	                then
+                	                rm -rf "$item"
+                        	fi
+	                        urls=$(echo -e "$urls\n$ID;$item")
+        	                echo "$ID;$item" >> ipfs-urls.txt
+                	else
+                        	echo "error"
+	                fi
+        	done
+	fi
 fi
 
 echo -e "$urls" | sort | uniq > ipfs-urls.txt
