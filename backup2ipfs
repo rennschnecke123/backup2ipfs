@@ -103,13 +103,23 @@ then
 	do
 		ID=$(echo $allIDs | cut -d';' -f1)
 		filePATH=$(echo $allIDs | cut -d';' -f2)
-		if [ "$mode" == "move" ] || [ "$mode" == "rebuild" ];
+		# rebuild
+		if [ "$mode" == "rebuild" ];
 		then
 			echo $allIDs
 			echo "$filePATH"
 			createPATH=$(echo $filePATH | rev | cut -d'/' -f2- | rev)
 			mkdir -p "$createPATH" >/dev/null 2>&1
-			(cp -vans "$ipfsDIR/$ID" "$filePATH"  >/dev/null 2>&1) || (wget -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>/dev/null) || (wget -nc -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID" >/dev/null 2>/dev/null)
+			(wget -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>/dev/null) || (wget -nc -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID" >/dev/null 2>/dev/null)
+		fi
+		# move
+		if [ "$mode" == "move" ];
+                then
+                        echo $allIDs
+                        echo "$filePATH"
+                        createPATH=$(echo $filePATH | rev | cut -d'/' -f2- | rev)
+                        mkdir -p "$createPATH" >/dev/null 2>&1
+                        (cp -vans "$ipfsDIR/$ID" "$filePATH"  >/dev/null 2>&1)
 		fi
 	done
 	if [ "$mode" == "copy" ] || [ "$mode" == "rebuild" ];
