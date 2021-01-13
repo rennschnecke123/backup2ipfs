@@ -135,7 +135,7 @@ else
 		echo "do a 'backup2ipfs copy' first"
 		exit 0
 	fi
-	lftp -e "get /.pin.txt; bye" -u duplicity,duplicity sftp://duplicity.duckdns.org >/dev/null 2>&1
+	lftp -e "get -e /.pin.txt; bye" -u duplicity,duplicity sftp://duplicity.duckdns.org >/dev/null 2>&1
 	for data in $(cat .pin.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq| head -n $countIPFS | sed "s/\\\"//g");
 	do
         	echo $data;
@@ -144,7 +144,7 @@ else
 	cat ipfs-urls.txt | cut -d';' -f1 > .pinTMP.txt 
 	cat .pin.txt | cut -d';' -f1 >> .pinTMP.txt
 	cat .pinTMP.txt | sort | uniq > .pin.txt 
-	lftp -e "put -O / .pin.txt; bye" -u duplicity,duplicity sftp://duplicity.duckdns.org >/dev/null 2>&1
+	lftp -e "put -e -O / .pin.txt; bye" -u duplicity,duplicity sftp://duplicity.duckdns.org >/dev/null 2>&1
 	rm -f .pin.txt >/dev/null 2>&1
 	rm -f .pinTMP.txt >/dev/null 2>&1
 
