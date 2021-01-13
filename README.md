@@ -19,6 +19,9 @@ backup2ipfs rebuild<br>
 <br>
 backup2ipfs pin<br>
 -&gt; pin data to local ipfs server<br>
+This is a simply pin exchange service - you store ten pins - other store the pins!<br>
+You need to install <i>lftp</i>:<br>
+<i>sudo apt install lftp</i>
 <br>
 <br>
  for symbolic links ipfs need to be started with mount option!<br>
