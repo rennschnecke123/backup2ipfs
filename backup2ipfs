@@ -127,9 +127,25 @@ then
 		find -type l -print -exec cp "{}" "{}.tmp" \; -exec mv "{}.tmp" "{}" \;  2>/dev/null
 	fi
 else
-	for data in $(cat ipfs-urls.txt | cut -d ";" -f1 | grep Qm | sed "s/\\\"//g");
+	rm -f pin.txt >/dev/null 2>&1
+	countIPFS=$(cat ipfs-urls.txt | grep Qm | wc -l)
+	if [ "$countIPFS" == "0" ];
+	then
+		echo "nothing to exchange!"
+		echo "do a 'backup2ipfs copy' first"
+		exit 0
+	fi
+	lftp -e "get /pin.txt; bye" -u duplicity,duplicity sftp://duplicity.duckdns.org >/dev/null 2>&1
+	for data in $(cat pin.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq| head -n $countIPFS | sed "s/\\\"//g");
 	do
         	echo $data;
-	        ipfs pin add --progress $data || exit 1
+	        ipfs pin add --progress $data 
 	done
+	cat ipfs-urls.txt | cut -d';' -f1 > pinTMP.txt 
+	cat pin.txt | cut -d';' -f1 >> pinTMP.txt
+	cat pinTMP.txt | sort | uniq > pin.txt 
+	lftp -e "put -O / pin.txt; bye" -u duplicity,duplicity sftp://duplicity.duckdns.org >/dev/null 2>&1
+	rm -f pin.txt >/dev/null 2>&1
+	rm -f pinTMP.txt >/dev/null 2>&1
+
 fi
