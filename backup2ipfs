@@ -122,7 +122,7 @@ then
                         (cp -vans "$ipfsDIR/$ID" "$filePATH"  >/dev/null 2>&1)
 		fi
 	done
-	if [ "$mode" == "copy" ] || [ "$mode" == "rebuild" ];
+	if [ "$mode" == "rebuild" ];
 	then
 		find -type l -print -exec cp "{}" "{}.tmp" \; -exec mv "{}.tmp" "{}" \;  2>/dev/null
 	fi
