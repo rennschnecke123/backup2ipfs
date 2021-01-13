@@ -19,7 +19,7 @@ backup2ipfs rebuild<br>
 <br>
 backup2ipfs pin<br>
 -&gt; pin data to local ipfs server<br>
-This is a simply pin exchange service - you store ten pins - other store the pins!<br>
+This is a simply pin exchange service - you store ten pins from others - others store ten pins from you!<br>
 You need to install <i>lftp</i>:<br>
 <i>sudo apt install lftp</i>
 <br>
