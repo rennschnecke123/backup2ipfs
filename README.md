@@ -18,7 +18,7 @@ So just store public or encrypted data!<br><br>
 -&gt; get data from ipfs<br>
 <br>
 <b>*backup2ipfs pin</b><br>
--&gt; pin data to local ipfs server<br>
+-&gt; exchange hashes for pinning (redundancy)<br>
 This is a simple pin exchange service - you store ten pins from others - others store ten pins from you!<br>
 You need to install <i>lftp</i>:<br>
 <i>sudo apt install lftp</i>
