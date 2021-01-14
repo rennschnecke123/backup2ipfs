@@ -27,3 +27,4 @@ You need to install <i>lftp</i>:<br>
  for symbolic links ipfs need to be started with mount option!<br>
  ipfs daemon --mount &amp;
  
+ <b>To store *non* gpg files set "--secOFF" with script start!</b>
