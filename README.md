@@ -23,6 +23,10 @@ This is a simple pin exchange service - you store ten pins from others - others 
 You need to install <i>lftp</i>:<br>
 <i>sudo apt install lftp</i>
 <br>
+<b>*backup2ipfs redundancy</b><br>
+-&gt; calculate how often each hash from your list could be found in ipfs<br>
+<br>
+<br>
 <br>
  for symbolic links ipfs need to be started with mount option!<br>
  ipfs daemon --mount &amp;
