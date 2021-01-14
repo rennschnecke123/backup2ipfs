@@ -25,6 +25,10 @@ You need to install <i>lftp</i>:<br>
 <br>
 <b>*backup2ipfs redundancy</b><br>
 -&gt; calculate how often each hash from your list could be found in ipfs<br>
+br>
+<b>*backup2ipfs clean</b><br>
+-&gt; delete hashes with already higher redundancy to get more disk space<br>
+<br>
 <br>
 <br>
 <br>
