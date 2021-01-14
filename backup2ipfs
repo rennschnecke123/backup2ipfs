@@ -138,11 +138,15 @@ else
 			echo "nothing to exchange!"
 			echo "do a 'backup2ipfs copy' first"
 			exit 0
+		else
+			echo "sharing $countIPFS ipfs hashes to pin"
+			echo "this might take a while to see an effect"
+			echo "you could test this with:"
+			echo "backup2ipfs redundancy"
 		fi
 		lftp -e "get -e /.pin.txt; bye" -u duplicity,duplicity sftp://duplicity.duckdns.org >/dev/null 2>&1
 		for data in $(cat .pin.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq| head -n $countIPFS | sed "s/\\\"//g");
 		do
-        		echo $data;
 			flock /tmp/pinExchange.flock timeout 300 ipfs pin add $data >/dev/null 2>&1 &
 		done
 		cat ipfs-urls.txt | cut -d';' -f1 > .pinTMP.txt 
