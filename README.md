@@ -1,7 +1,7 @@
 # backup2ipfs
 
 <b>Syntax:</b><br>
-backup2ipfs &lt;command&gt; (--secOFF)<br>
+<b>backup2ipfs &lt;command&gt; (--secOFF)</b><br>
 copies data recursive from <i>current</i> directory to ipfs<br><br>
 
 *Be aware that ipfs is readable by anyone!!!*<br>
