@@ -2,7 +2,7 @@
 
 <b>Syntax:</b><br>
 backup2ipfs &lt;command&gt; (--secOFF)<br>
-copies data recursive from current directory to ipfs<br><br>
+copies data recursive from <i>current</i> directory to ipfs<br><br>
 
 *Be aware that ipfs is readable by anyone!!!*<br>
 So just store public or encrypted data!<br><br>
