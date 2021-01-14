@@ -8,16 +8,16 @@ copies data recursive from <i>current</i> directory to ipfs<br><br>
 So just store public or encrypted data!<br><br>
 
 <b>Commands:</b><br>
-*backup2ipfs copy<br>
+<b>*backup2ipfs copy</b><br>
 -&gt; copy data to ipfs<br>
 <br>
-*backup2ipfs move<br>
+<b>*backup2ipfs move</b><br>
 -&gt; move data to ipfs<br>
 <br>
-*backup2ipfs rebuild<br>
+<b>*backup2ipfs rebuild</b><br>
 -&gt; get data from ipfs<br>
 <br>
-*backup2ipfs pin<br>
+<b>*backup2ipfs pin</b><br>
 -&gt; pin data to local ipfs server<br>
 This is a simple pin exchange service - you store ten pins from others - others store ten pins from you!<br>
 You need to install <i>lftp</i>:<br>
