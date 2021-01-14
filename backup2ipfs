@@ -13,7 +13,7 @@ ipnsDIR=/ipns
 
 IFS=$'\n'
 
-if [ "$mode" != "--help" ] && [ "$mode" != "copy" ] && [ "$mode" != "move" ] && [ "$mode" != "rebuild" ] && [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ];
+if [ "$mode" != "--help" ] && [ "$mode" != "copy" ] && [ "$mode" != "move" ] && [ "$mode" != "rebuild" ] && [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ] && [ "$mode" != "clean" ];
 then
 	mode="--help"
 fi
@@ -32,6 +32,10 @@ then
 	echo "-> pin data to local ipfs server"
 	echo "backup2ipfs redundancy"
         echo "-> calculate redundancy of hashes"
+	echo "backup2ipfs clean"
+        echo "-> clean system/delete very redundant data"
+	echo "-> You need to start:"
+	echo "-> 'ipfs repo gc' to really delete items from disk!"
 	echo ""
 	echo " for symbolic links ipfs need to be started with mount option!"
 	echo " ipfs daemon --mount &"
@@ -48,7 +52,7 @@ cp -f ipfs-urls.txt ipfs-urls.txt.tmp && mv -f ipfs-urls.txt.tmp ipfs-urls.txt
 # read old urls
 urls=$(cat ipfs-urls.txt)
 
-if [ "$mode" != "rebuild" ] && [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ];
+if [ "$mode" != "rebuild" ] && [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ] && [ "$mode" != "clean" ];
 then
 	# push to ipfs
 	# only gpg files!
@@ -98,7 +102,7 @@ cat << EOF >> ipfs-urls.txt
 # created with backup2ipfs - https://github.com/rennschnecke123/backup2ipfs
 EOF
 
-if [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ];
+if [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ] && [ "$mode" != "clean" ];
 then
 	# symb links
 	for allIDs in $(cat ipfs-urls.txt | grep -v ^\#);
@@ -158,11 +162,27 @@ else
 	
 
 	else
-		for data in $(cat ipfs-urls.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq | sed "s/\\\"//g");
-        	do
-                	echo $data;
-			echo "Redundancy: "$(timeout 60 ipfs dht findprovs -n 3 $data | wc -l)
-			echo ""
-	        done
+		if [ "$mode" == "redundancy" ];
+		then
+			for data in $(cat ipfs-urls.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq | sed "s/\\\"//g");
+        		do
+                		echo $data;
+				echo "Redundancy: "$(timeout 60 ipfs dht findprovs -n 3 $data | wc -l)
+				echo ""
+	        	done
+		else # clean system
+			for data in $(ipfs pin ls -t recursive -q);
+			do
+				echo $data;
+				redundancy=$(timeout 60 ipfs dht findprovs -n 3 $data | wc -l)
+                                if [ "$redundancy" -gt "2" ];
+				then
+					echo "deleted"
+					ipfs pin rm $data >/dev/null 2>&1
+				else
+					echo "not touched"
+				fi
+			done
+		fi
 	fi
 fi
