@@ -139,7 +139,7 @@ else
 	for data in $(cat .pin.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq| head -n $countIPFS | sed "s/\\\"//g");
 	do
         	echo $data;
-	        ipfs pin add --progress $data 
+	        timeout 300 ipfs pin add --progress $data 
 	done
 	cat ipfs-urls.txt | cut -d';' -f1 > .pinTMP.txt 
 	cat .pin.txt | cut -d';' -f1 >> .pinTMP.txt
