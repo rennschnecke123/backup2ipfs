@@ -50,7 +50,7 @@ fi
 cp -f ipfs-urls.txt ipfs-urls.txt.tmp && mv -f ipfs-urls.txt.tmp ipfs-urls.txt
 
 # read old urls
-urls=$(cat ipfs-urls.txt)
+urls=$(cat ipfs-urls.txt | grep -v ^\# | grep Qm)
 
 if [ "$mode" != "rebuild" ] && [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ] && [ "$mode" != "clean" ];
 then
@@ -97,10 +97,22 @@ then
 	fi
 fi
 
-echo -e "$urls" | sort | uniq > ipfs-urls.txt
-cat << EOF >> ipfs-urls.txt
+cat << EOF > ipfs-urls.txt
+#######################################################################
 # created with backup2ipfs - https://github.com/rennschnecke123/backup2ipfs
+# 
+# store file on your local system 
+# (with installed "backup2ipfs"!! - at /bin/backup2ipfs for example)
+#
+# then do:
+# backup2ipfs rebuild
+#
+# That's all!
+#
+#######################################################################
 EOF
+echo -e "$urls" | sort | uniq >> ipfs-urls.txt
+
 
 if [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ] && [ "$mode" != "clean" ];
 then
@@ -155,7 +167,21 @@ else
 		done
 		cat ipfs-urls.txt | cut -d';' -f1 > .pinTMP.txt 
 		cat .pin.txt | cut -d';' -f1 >> .pinTMP.txt
-		cat .pinTMP.txt | sort | uniq > .pin.txt 
+cat << EOF > .pin.txt
+#######################################################################
+# created with backup2ipfs - https://github.com/rennschnecke123/backup2ipfs
+# 
+# store file on your local system 
+# (with installed "backup2ipfs"!! - at /bin/backup2ipfs for example)
+#
+# then do:
+# backup2ipfs rebuild
+#
+# That's all!
+#
+#######################################################################
+EOF
+		cat .pinTMP.txt | sort | uniq | grep Qm >> .pin.txt
 		lftp -e "put -e -O / .pin.txt; bye" -u duplicity,duplicity sftp://duplicity.duckdns.org >/dev/null 2>&1
 		rm -f .pin.txt >/dev/null 2>&1
 		rm -f .pinTMP.txt >/dev/null 2>&1
@@ -186,5 +212,4 @@ else
 		fi
 	fi
 fi
-
 
