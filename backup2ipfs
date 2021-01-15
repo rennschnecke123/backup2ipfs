@@ -167,14 +167,14 @@ else
 			for data in $(cat ipfs-urls.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq | sed "s/\\\"//g");
         		do
                 		echo $data;
-				echo "Redundancy: "$(timeout 60 ipfs dht findprovs $data | grep Qm | wc -l)
+				echo "Redundancy: "$(timeout 60 ipfs dht findprovs $data | wc -l)
 				echo ""
 	        	done
 		else # clean system
 			for data in $(ipfs pin ls -t recursive -q);
 			do
 				echo $data;
-				redundancy=$(timeout 60 ipfs dht findprovs $data | grep Qm | wc -l)
+				redundancy=$(timeout 60 ipfs dht findprovs $data | wc -l)
                                 if [ "$redundancy" -gt "2" ];
 				then
 					echo "deleted"
