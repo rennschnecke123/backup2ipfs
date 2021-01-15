@@ -200,8 +200,8 @@ EOF
 			for data in $(ipfs pin ls -t recursive -q);
 			do
 				echo $data;
-				redundancy=$(timeout 60 ipfs dht findprovs $data | wc -l)
-                                if [ "$redundancy" -gt "2" ];
+				redundancy=$(timeout 60 ipfs dht findprovs -n 2 $data | wc -l)
+                                if [ "$redundancy" -gt "1" ];
 				then
 					echo "deleted"
 					ipfs pin rm $data >/dev/null 2>&1
@@ -212,4 +212,5 @@ EOF
 		fi
 	fi
 fi
+
 
