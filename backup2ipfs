@@ -151,7 +151,7 @@ else
 		lftp -e "get -e /.pin.txt; bye" -u duplicity,duplicity sftp://duplicity.duckdns.org >/dev/null 2>&1
 		for data in $(cat .pin.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq| head -n $countIPFS | sed "s/\\\"//g");
 		do
-			flock /tmp/pinExchange.flock timeout 300 ipfs pin add $data >/dev/null 2>&1 &
+			flock /tmp/pinExchange.flock timeout 3600 ipfs pin add $data >/dev/null 2>&1 &
 		done
 		cat ipfs-urls.txt | cut -d';' -f1 > .pinTMP.txt 
 		cat .pin.txt | cut -d';' -f1 >> .pinTMP.txt
