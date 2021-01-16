@@ -8,10 +8,10 @@ copies data recursive from <i>current</i> directory to ipfs<br><br>
 So just store public or encrypted data!<br><br>
 
 <b>Commands:</b><br>
-<b>*backup2ipfs copy</b><br>
+<b>*backup2ipfs copy (--secOFF)</b><br>
 -&gt; copy data to ipfs<br>
 <br>
-<b>*backup2ipfs move</b><br>
+<b>*backup2ipfs move (--secOFF)</b><br>
 -&gt; move data to ipfs<br>
 <br>
 <b>*backup2ipfs rebuild</b><br>
