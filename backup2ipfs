@@ -147,7 +147,7 @@ then
 else 
 	if [ "$mode" == "pin" ];
 	then
-		rm -f .pin.txt >/dev/null 2>&1
+		hostID=$(ipfs id -f="<id>")
 		countIPFS=$(cat ipfs-urls.txt | grep Qm | wc -l)
 		if [ "$countIPFS" == "0" ];
 		then
@@ -161,30 +161,15 @@ else
 			echo "backup2ipfs redundancy"
 		fi
 		lftp -e "get -e /.pin.txt; bye" -u duplicity,duplicity sftp://duplicity.duckdns.org >/dev/null 2>&1
+		lftp -e "get -e /.$hostID.txt; bye" -u duplicity,duplicity sftp://duplicity.duckdns.org >/dev/null 2>&1
 		for data in $(cat .pin.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq| head -n $countIPFS | sed "s/\\\"//g");
 		do
 			flock /tmp/pinExchange.flock timeout 3600 ipfs pin add $data >/dev/null 2>&1 &
 		done
-		cat ipfs-urls.txt | cut -d';' -f1 > .pinTMP.txt 
-		cat .pin.txt | cut -d';' -f1 >> .pinTMP.txt
-cat << EOF > .pin.txt
-#######################################################################
-# created with backup2ipfs - https://github.com/rennschnecke123/backup2ipfs
-# 
-# store file on your local system 
-# (with installed "backup2ipfs"!! - at /bin/backup2ipfs for example)
-#
-# then do:
-# backup2ipfs rebuild
-#
-# That's all!
-#
-#######################################################################
-EOF
-		cat .pinTMP.txt | sort | uniq | grep Qm >> .pin.txt
-		lftp -e "put -e -O / .pin.txt; bye" -u duplicity,duplicity sftp://duplicity.duckdns.org >/dev/null 2>&1
+		cat ipfs-urls.txt | cut -d ";" -f1  | grep Qm | sed 's/\"//g' | sort | uniq >> .$hostID.txt
+		lftp -e "put -e -O / .$hostID.txt; bye" -u duplicity,duplicity sftp://duplicity.duckdns.org >/dev/null 2>&1
 		rm -f .pin.txt >/dev/null 2>&1
-		rm -f .pinTMP.txt >/dev/null 2>&1
+		rm -f .$hostID.txt >/dev/null 2>&1
 	
 
 	else
@@ -212,5 +197,4 @@ EOF
 		fi
 	fi
 fi
-
 
