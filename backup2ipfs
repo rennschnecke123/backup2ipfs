@@ -11,6 +11,8 @@ ipfsDIR=/ipfs
 ipnsDIR=/ipns
 
 
+
+
 IFS=$'\n'
 
 if [ "$mode" != "--help" ] && [ "$mode" != "copy" ] && [ "$mode" != "move" ] && [ "$mode" != "rebuild" ] && [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ] && [ "$mode" != "clean" ];
@@ -147,6 +149,15 @@ then
 else 
 	if [ "$mode" == "pin" ];
 	then
+
+		# test for sshpass
+		if [ "$(which sshpass)" == "" ];
+		then
+			echo "You need to install sshpass for pin-exchange:"
+			echo " sudo apt install sshpass"
+			exit 0
+		fi
+
 		hostID=$(ipfs id -f="<id>")
 		countIPFS=$(cat ipfs-urls.txt | grep Qm | wc -l)
 		if [ "$countIPFS" == "0" ];
@@ -160,14 +171,20 @@ else
 			echo "you could test this with:"
 			echo "backup2ipfs redundancy"
 		fi
-		lftp -e "get -e /.pin.txt; bye" -u duplicity,duplicity sftp://duplicity.duckdns.org >/dev/null 2>&1
-		lftp -e "get -e /.$hostID.txt; bye" -u duplicity,duplicity sftp://duplicity.duckdns.org >/dev/null 2>&1
+		sshpass -p 'duplicity' sftp duplicity@duplicity.duckdns.org:/ >/dev/null 2>&1 << EOF
+				get .pin.txt
+EOF
+		sshpass -p 'duplicity' sftp duplicity@duplicity.duckdns.org:/ >/dev/null 2>&1 << EOF
+				get .$hostID.txt
+EOF
 		for data in $(cat .pin.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq| head -n $countIPFS | sed "s/\\\"//g");
 		do
 			flock /tmp/pinExchange.flock timeout 3600 ipfs pin add $data >/dev/null 2>&1 &
 		done
 		cat ipfs-urls.txt | cut -d ";" -f1  | grep Qm | sed 's/\"//g' | sort | uniq >> .$hostID.txt
-		lftp -e "put -e -O / .$hostID.txt; bye" -u duplicity,duplicity sftp://duplicity.duckdns.org >/dev/null 2>&1
+		sshpass -p 'duplicity' sftp duplicity@duplicity.duckdns.org:/ >/dev/null 2>&1 << EOF
+				put .$hostID.txt
+EOF
 		rm -f .pin.txt >/dev/null 2>&1
 		rm -f .$hostID.txt >/dev/null 2>&1
 	
@@ -197,4 +214,3 @@ else
 		fi
 	fi
 fi
-
