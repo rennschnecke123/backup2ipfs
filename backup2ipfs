@@ -187,7 +187,7 @@ EOF
 			countIPFS=$maxPin
 		fi
 		
-		if [ $intFREE > $(( minFreeSize4Pinning + 1 )) ];
+		if [ "$FREE" -gt "$minFreeSize4Pinning" ];
 		then
 			for data in $(cat .pin.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq| head -n $countIPFS | sed "s/\\\"//g");
 			do
