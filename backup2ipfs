@@ -180,7 +180,7 @@ EOF
 EOF
 
 		FREE=$(df ~/.ipfs| tail -1 | awk '{print $4}')
-		maxPinFloat=$(( FREE / 1048576 ))
+		maxPinFloat=$(( FREE / $minFreeSize4Pinning ))
 		maxPin=${maxPinFloat%.*}
 		if [ "$countIPFS" -gt "$maxPin" ];
 		then
