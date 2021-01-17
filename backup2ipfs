@@ -10,7 +10,8 @@ security=$2
 ipfsDIR=/ipfs
 ipnsDIR=/ipns
 
-
+# just offer pinning when 10G space free
+minFreeSize4Pinning=10485760
 
 
 IFS=$'\n'
@@ -177,10 +178,16 @@ EOF
 		sshpass -p 'duplicity' sftp duplicity@duplicity.duckdns.org:/ >/dev/null 2>&1 << EOF
 				get .$hostID.txt
 EOF
-		for data in $(cat .pin.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq| head -n $countIPFS | sed "s/\\\"//g");
-		do
-			flock /tmp/pinExchange.flock timeout 3600 ipfs pin add $data >/dev/null 2>&1 &
-		done
+
+		floatFREE=$(df --output=avail ~/.ipfs/)
+		intFREE=${floatFREE%.*}
+		if [ "$intFREE" > "$minFreeSize4Pinning" ];
+		then
+			for data in $(cat .pin.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq| head -n $countIPFS | sed "s/\\\"//g");
+			do
+				flock /tmp/pinExchange.flock timeout 3600 ipfs pin add $data >/dev/null 2>&1 & 
+			done
+		fi
 		cat ipfs-urls.txt | cut -d ";" -f1  | grep Qm | sed 's/\"//g' | sort | uniq >> .$hostID.txt
 		sshpass -p 'duplicity' sftp duplicity@duplicity.duckdns.org:/ >/dev/null 2>&1 << EOF
 				put .$hostID.txt
