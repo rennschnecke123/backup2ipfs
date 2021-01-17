@@ -179,9 +179,15 @@ EOF
 				get .$hostID.txt
 EOF
 
-		floatFREE=$(df --output=avail ~/.ipfs/)
-		intFREE=${floatFREE%.*}
-		if [ "$intFREE" > "$minFreeSize4Pinning" ];
+		FREE=$(df ~/.ipfs| tail -1 | awk '{print $4}')
+		maxPinFloat=$(( FREE / 1048576 ))
+		maxPin=${maxPinFloat%.*}
+		if [ "$countIPFS" -gt "$maxPin" ];
+		then
+			countIPFS=$maxPin
+		fi
+		
+		if [ $intFREE > $(( minFreeSize4Pinning + 1 )) ];
 		then
 			for data in $(cat .pin.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq| head -n $countIPFS | sed "s/\\\"//g");
 			do
