@@ -21,8 +21,8 @@ This works even with no local ipfs server running!!<br>
 <b>*backup2ipfs pin (--all)</b><br>
 -&gt; exchange hashes for pinning (redundancy)<br>
 This is a simple pin exchange service - you store ten pins from others - others store ten pins from you!<br>
-You need to install <i>lftp</i>:<br>
-<i>sudo apt install lftp</i><br>
+You need to install <i>sshpass</i>:<br>
+<i>sudo apt install sshpass</i><br>
 <br>
 <b>*backup2ipfs redundancy (--all)</b><br>
 -&gt; calculate how often each hash from your list could be found in ipfs<br>
