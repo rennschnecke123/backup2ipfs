@@ -33,6 +33,9 @@ You need to install <i>sshpass</i>:<br>
 <br><rb>
 <b>*backup2ipfs daemon</b><br>
 -&gt; starts backup2ipfs a pin rotation background process<br>
+ipfs daemon should running with "--enable-gc" for garbage collecion!<br>
+You need to install <i>sshpass</i>:<br>
+<i>sudo apt install sshpass</i><br>
 <br>
 <br>
 <br>
