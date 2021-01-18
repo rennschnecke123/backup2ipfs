@@ -235,32 +235,62 @@ EOF
 		if [ "$FREE" -gt "$minFreeSize4Pinning" ];
 		then
 			echo "start"
-			for data in $(cat .pin.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq| head -n $countIPFS | sed "s/\\\"//g");
-			do
-				echo "found $data"
-				FREE=$(df ~/.ipfs| tail -1 | awk '{print $4}')
-				FREEdaemon=$(( FREE / 10 ))
-				daemonsRunning=$(ps axf | grep "backup2ipfs daemon" | grep -v "$$" | grep -v "grep" | wc -l)
-        			if [ "$daemonsRunning" -lt "1" ];
-				then
-					# manual mode
-					echo "manual pinning"
-		                	if [ "$FREE" -gt "$minFreeSize4Pinning" ];
-					then
-						flock /tmp/pinExchange.flock timeout 3600 ipfs pin add $data >/dev/null 2>&1 & 
-					fi
-				else
-					# daemon mode
-					echo "daemon pinning"
-					if [ "$FREEdaemon" -gt "$minFreeSize4Pinning" ];
-					then
-						timeout 3600 ipfs pin add $data
-					else
-						timeout 3600 ipfs pin add $data 
-						ipfs pin rm $data
-					fi
-				fi
-			done
+			if [ "$security" == "--all" ];
+			then
+				for data in $(ipfs pin ls -t recursive -q);
+                                do
+                                        echo "found $data"
+                                        FREE=$(df ~/.ipfs| tail -1 | awk '{print $4}')
+                                        FREEdaemon=$(( FREE / 10 ))
+                                        daemonsRunning=$(ps axf | grep "backup2ipfs daemon" | grep -v "$$" | grep -v "grep" | wc -l)
+                                        if [ "$daemonsRunning" -lt "1" ];
+                                        then
+                                                # manual mode
+                                                echo "manual pinning"
+                                                if [ "$FREE" -gt "$minFreeSize4Pinning" ];
+                                                then
+                                                        flock /tmp/pinExchange.flock timeout 3600 ipfs pin add $data >/dev/null 2>&1 &
+                                                fi
+                                        else
+                                                # daemon mode
+                                                echo "daemon pinning"
+                                                if [ "$FREEdaemon" -gt "$minFreeSize4Pinning" ];
+                                                then
+                                                        timeout 3600 ipfs pin add $data
+                                                else
+                                                        timeout 3600 ipfs pin add $data
+                                                        ipfs pin rm $data
+                                                fi
+                                        fi
+                                done
+			else
+				for data in $(cat .pin.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq| head -n $countIPFS | sed "s/\\\"//g");
+                                do
+                                        echo "found $data"
+                                        FREE=$(df ~/.ipfs| tail -1 | awk '{print $4}')
+                                        FREEdaemon=$(( FREE / 10 ))
+                                        daemonsRunning=$(ps axf | grep "backup2ipfs daemon" | grep -v "$$" | grep -v "grep" | wc -l)
+                                        if [ "$daemonsRunning" -lt "1" ];
+                                        then
+                                                # manual mode
+                                                echo "manual pinning"
+                                                if [ "$FREE" -gt "$minFreeSize4Pinning" ];
+                                                then
+                                                        flock /tmp/pinExchange.flock timeout 3600 ipfs pin add $data >/dev/null 2>&1 &
+                                                fi
+                                        else
+                                                # daemon mode
+                                                echo "daemon pinning"
+                                                if [ "$FREEdaemon" -gt "$minFreeSize4Pinning" ];
+                                                then
+                                                        timeout 3600 ipfs pin add $data
+                                                else
+                                                        timeout 3600 ipfs pin add $data
+                                                        ipfs pin rm $data
+                                                fi
+                                        fi
+                                done
+			fi
 			echo "stop"
 		fi
 	 
