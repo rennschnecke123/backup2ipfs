@@ -1,0 +1,14 @@
+#######################################################################
+# created with backup2ipfs - https://github.com/rennschnecke123/backup2ipfs
+# 
+# store file on your local system 
+# (with installed "backup2ipfs"!! - at /bin/backup2ipfs for example)
+#
+# then do:
+# backup2ipfs rebuild
+#
+# That's all!
+#
+#######################################################################
+Qmbqb7LauhKjHk24N1B4UhyetSEouF6VbwzXf73PiFu5oK;./elstern.mp4
+QmPNxK2JUihfBGEctQzX63idhYTK81c9wbLTA5B1A1kJxA;./piep it.mp4
