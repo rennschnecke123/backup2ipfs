@@ -18,13 +18,13 @@ So just store public or encrypted data!<br><br>
 -&gt; get data from ipfs<br>
 This works even with no local ipfs server running!!<br>
 <br>
-<b>*backup2ipfs pin</b><br>
+<b>*backup2ipfs pin (--all)</b><br>
 -&gt; exchange hashes for pinning (redundancy)<br>
 This is a simple pin exchange service - you store ten pins from others - others store ten pins from you!<br>
 You need to install <i>lftp</i>:<br>
 <i>sudo apt install lftp</i><br>
 <br>
-<b>*backup2ipfs redundancy</b><br>
+<b>*backup2ipfs redundancy (--all)</b><br>
 -&gt; calculate how often each hash from your list could be found in ipfs<br>
 <br>
 <b>*backup2ipfs clean</b><br>
