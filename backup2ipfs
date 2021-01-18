@@ -148,7 +148,11 @@ cat << EOF > ipfs-urls.txt
 EOF
 echo -e "$urls" | grep Qm | sort | uniq >> ipfs-urls.txt
 
-
+if [ "$mode" == "copy" ] && [ "$mode" == "move" ];
+then
+	# done!
+	exit 0
+fi
 
 
 if [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ] && [ "$mode" != "clean" ];
@@ -168,19 +172,19 @@ then
 			wget --show-progress -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>/dev/null || wget --show-progress -nc  -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID" >/dev/null 2>/dev/null
 		fi
 		# move
-		if [ "$mode" == "move" ];
-                then
+		#if [ "$mode" == "move" ];
+                #then
 #                       echo $allIDs
-                        echo "$filePATH"
-                        createPATH=$(echo $filePATH | rev | cut -d'/' -f2- | rev)
-                        mkdir -p "$createPATH" >/dev/null 2>&1
-                        (cp -vans "$ipfsDIR/$ID" "$filePATH"  >/dev/null 2>&1)
-		fi
-		done
-		if [ "$mode" == "rebuild" ];
-		then
-			find -type l -print -exec cp "{}" "{}.tmp" \; -exec mv "{}.tmp" "{}" \;  2>/dev/null
-		fi
+                #        echo "$filePATH"
+                #        createPATH=$(echo $filePATH | rev | cut -d'/' -f2- | rev)
+                #        mkdir -p "$createPATH" >/dev/null 2>&1
+                #        (cp -vans "$ipfsDIR/$ID" "$filePATH"  >/dev/null 2>&1)
+		#fi
+	done
+	if [ "$mode" == "rebuild" ];
+	then
+		find -type l -print -exec cp "{}" "{}.tmp" \; -exec mv "{}.tmp" "{}" \;  2>/dev/null
+	fi
 else 
 	if [ "$mode" == "pin" ];
 	then
