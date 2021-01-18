@@ -231,7 +231,26 @@ EOF
 		then
 			for data in $(cat .pin.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq| head -n $countIPFS | sed "s/\\\"//g");
 			do
-				flock /tmp/pinExchange.flock timeout 3600 ipfs pin add $data >/dev/null 2>&1 & 
+				FREE=$(df ~/.ipfs| tail -1 | awk '{print $4}')
+				FREEdaemon=$(( FREE / 10 ))
+				daemonsRunning=$(ps axf | grep "backup2ipfs daemon" | grep -v "$$" | grep -v "grep" | wc -l)
+        			if [ "$daemonsRunning" -lt "1" ];
+				then
+					# manual mode
+		                	if [ "$FREE" -gt "$minFreeSize4Pinning" ];
+					then
+						flock /tmp/pinExchange.flock timeout 3600 ipfs pin add $data >/dev/null 2>&1 & 
+					fi
+				else
+					# daemon mode
+					if [ "$FREEdaemon" -gt "$minFreeSize4Pinning" ];
+					then
+						timeout 3600 ipfs pin add $data
+					else
+						timeout 3600 ipfs pin add $data 
+						ipfs pin rm $data
+					fi
+				fi
 			done
 		fi
 	 	
