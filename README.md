@@ -30,6 +30,10 @@ You need to install <i>lftp</i>:<br>
 <b>*backup2ipfs clean</b><br>
 -&gt; delete hashes with already higher redundancy to get more disk space<br>
 <br>
+<br><rb>
+<b>*backup2ipfs daemon</b><br>
+-&gt; starts backup2ipfs a pin rotation background process<br>
+<br>
 <br>
 <br>
 <br>
