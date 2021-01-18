@@ -273,7 +273,7 @@ EOF
 			do
 				echo $data;
 				redundancy=$(timeout 60 ipfs dht findprovs -n 2 $data | wc -l)
-        	                if [ "$redundancy" -gt "1" ];
+        	                if [ "$redundancy" -gt "2" ];
 				then
 					echo "deleted"
 						ipfs pin rm $data >/dev/null 2>&1
