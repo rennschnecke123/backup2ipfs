@@ -192,6 +192,12 @@ else
 		fi
 
 		hostID=$(ipfs id -f="<id>")
+		if [ "$hostID" == "" ];
+		then
+			echo "ipfs not running?"
+			exit 0
+		fi
+
 		if [ "$security" == "--all" ];
 		then
 			countIPFS=$(ipfs pin ls -t recursive -q | wc -l)
