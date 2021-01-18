@@ -68,7 +68,7 @@ function daemonize()
 if [ "$mode" == "daemon" ];
 then
 	daemonsRunning=$(ps axf | grep "backup2ipfs daemon" | grep -v "$$" | grep -v "grep" | wc -l)
-	if [ "$daemonsRunning" -gt "1" ];
+	if [ "$daemonsRunning" -gt "1" ] && [ "$security" != "--force" ];
 	then
 		echo "daemon is already running!"
 		echo ""
