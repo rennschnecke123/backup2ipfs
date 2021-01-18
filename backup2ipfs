@@ -104,8 +104,8 @@ then
 				then
 					rm -rf "$item"
 				fi
-				urls=$(echo -e "$urls\n$ID;$item")
-				echo "$ID;$item" >> ipfs-urls.txt
+				urls=$(echo -e "$urls\n$ID;$item;https://ipfs.io/ipfs/$ID")
+				echo -e "$ID;$item;https://ipfs.io/ipfs/$ID" >> ipfs-urls.txt
 			else
 				echo "error"
 			fi
@@ -123,8 +123,8 @@ then
         	                then
                 	                rm -rf "$item"
                         	fi
-	                        urls=$(echo -e "$urls\n$ID;$item")
-        	                echo "$ID;$item" >> ipfs-urls.txt
+	                        urls=$(echo -e "$urls\n$ID;$item;https://ipfs.io/ipfs/$ID")
+        	                echo -e "$ID;$item;https://ipfs.io/ipfs/$ID" >> ipfs-urls.txt
                 	else
                         	echo "error"
 	                fi
@@ -146,7 +146,9 @@ cat << EOF > ipfs-urls.txt
 #
 #######################################################################
 EOF
-echo -e "$urls" | sort | uniq >> ipfs-urls.txt
+echo -e "$urls" | grep Qm | sort | uniq >> ipfs-urls.txt
+
+
 
 
 if [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ] && [ "$mode" != "clean" ];
