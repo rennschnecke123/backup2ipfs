@@ -13,10 +13,10 @@ ipnsDIR=/ipns
 # just offer pinning when 10G space free
 minFreeSize4Pinning=10485760
 
-
 IFS=$'\n'
 
-if [ "$mode" != "--help" ] && [ "$mode" != "copy" ] && [ "$mode" != "move" ] && [ "$mode" != "rebuild" ] && [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ] && [ "$mode" != "clean" ];
+
+if [ "$mode" != "--help" ] && [ "$mode" != "copy" ] && [ "$mode" != "move" ] && [ "$mode" != "rebuild" ] && [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ] && [ "$mode" != "clean" ] && [ "$mode" != "daemon" ];
 then
 	mode="--help"
 fi
@@ -25,20 +25,23 @@ fi
 if [ "$mode" == "--help" ];
 then
 	echo "Syntax:"
-	echo "backup2ipfs copy"
+	echo "backup2ipfs copy (--secOFF)"
 	echo "-> copy data to ipfs"
-	echo "backup2ipfs move (with attempt to symb link)"
+	echo "backup2ipfs move (--secOFF)"
 	echo "-> move data to ipfs"
 	echo "backup2ipfs rebuild"
 	echo "-> get data from ipfs"
-	echo "backup2ipfs pin"
+	echo "backup2ipfs pin (--all)"
 	echo "-> pin data to local ipfs server"
-	echo "backup2ipfs redundancy"
+	echo "backup2ipfs redundancy (--all)"
         echo "-> calculate redundancy of hashes"
 	echo "backup2ipfs clean"
         echo "-> clean system/delete very redundant data"
 	echo "-> You need to start:"
 	echo "-> 'ipfs repo gc' to really delete items from disk!"
+	echo ""
+	echo "backup2ipfs daemon"
+	echo "-> starts backup2ipfs as pinning daemon process"
 	echo ""
 	echo " for symbolic links ipfs need to be started with mount option!"
 	echo " ipfs daemon --mount &"
@@ -46,6 +49,35 @@ then
 	echo " to store _non_ gpg files, add '--secOFF' as parameter!"
 	exit 0
 fi
+
+
+# daemon mode
+function daemonize()
+{
+	while [ 1 ];
+	do
+		backup2ipfs pin --all >/dev/null 2>&1
+		sleep 3600
+		FREE=$(df ~/.ipfs| tail -1 | awk '{print $4}')
+                if [ "$FREE" -gt "$minFreeSize4Pinning" ];
+		then
+			backup2ipfs clean >/dev/null 2>&1
+		fi
+	done
+}
+if [ "$mode" == "daemon" ];
+then
+	daemonsRunning=$(ps axf | grep "backup2ipfs daemon" | grep -v "$$" | grep -v "grep" | wc -l)
+	if [ "$daemonsRunning" -gt "1" ];
+	then
+		echo "daemon is already running!"
+		echo ""
+		exit 0
+	fi
+	daemonize &
+	exit 0
+fi
+
 
 
 
@@ -127,26 +159,26 @@ then
 		# rebuild
 		if [ "$mode" == "rebuild" ];
 		then
-			echo $allIDs
+#			echo $allIDs
 			echo "$filePATH"
 			createPATH=$(echo $filePATH | rev | cut -d'/' -f2- | rev)
 			mkdir -p "$createPATH" >/dev/null 2>&1
-			(wget -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>/dev/null) || (wget -nc -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID" >/dev/null 2>/dev/null)
+			wget --show-progress -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>/dev/null || wget --show-progress -nc  -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID" >/dev/null 2>/dev/null
 		fi
 		# move
 		if [ "$mode" == "move" ];
                 then
-                        echo $allIDs
+#                       echo $allIDs
                         echo "$filePATH"
                         createPATH=$(echo $filePATH | rev | cut -d'/' -f2- | rev)
                         mkdir -p "$createPATH" >/dev/null 2>&1
                         (cp -vans "$ipfsDIR/$ID" "$filePATH"  >/dev/null 2>&1)
 		fi
-	done
-	if [ "$mode" == "rebuild" ];
-	then
-		find -type l -print -exec cp "{}" "{}.tmp" \; -exec mv "{}.tmp" "{}" \;  2>/dev/null
-	fi
+		done
+		if [ "$mode" == "rebuild" ];
+		then
+			find -type l -print -exec cp "{}" "{}.tmp" \; -exec mv "{}.tmp" "{}" \;  2>/dev/null
+		fi
 else 
 	if [ "$mode" == "pin" ];
 	then
@@ -160,23 +192,31 @@ else
 		fi
 
 		hostID=$(ipfs id -f="<id>")
-		countIPFS=$(cat ipfs-urls.txt | grep Qm | wc -l)
-		if [ "$countIPFS" == "0" ];
+		if [ "$security" == "--all" ];
 		then
-			echo "nothing to exchange!"
-			echo "do a 'backup2ipfs copy' first"
-			exit 0
+			countIPFS=$(ipfs pin ls -t recursive -q | wc -l)
 		else
-			echo "sharing $countIPFS ipfs hashes to pin"
-			echo "this might take a while to see an effect"
-			echo "you could test this with:"
-			echo "backup2ipfs redundancy"
+			countIPFS=$(cat ipfs-urls.txt | grep Qm | wc -l)
 		fi
+
+		if [ "$countIPFS" == "0" ];
+                then
+                	echo "nothing to exchange!"
+	                echo "do a 'backup2ipfs copy' first"
+        	        exit 0
+                else
+                	echo "sharing $countIPFS ipfs hashes to pin"
+	                echo "this might take a while to see an effect"
+        	        echo "you could test this with:"
+			echo "'backup2ipfs redundancy (--all)'"
+			echo ""
+                fi
+
 		sshpass -p 'duplicity' sftp duplicity@duplicity.duckdns.org:/ >/dev/null 2>&1 << EOF
-				get .pin.txt
+			get .pin.txt
 EOF
 		sshpass -p 'duplicity' sftp duplicity@duplicity.duckdns.org:/ >/dev/null 2>&1 << EOF
-				get .$hostID.txt
+			get .$hostID.txt
 EOF
 
 		FREE=$(df ~/.ipfs| tail -1 | awk '{print $4}')
@@ -194,9 +234,16 @@ EOF
 				flock /tmp/pinExchange.flock timeout 3600 ipfs pin add $data >/dev/null 2>&1 & 
 			done
 		fi
-		cat ipfs-urls.txt | cut -d ";" -f1  | grep Qm | sed 's/\"//g' | sort | uniq >> .$hostID.txt
+	 	
+		if [ "$security" == "--all" ];
+		then
+			ipfs pin ls -t recursive -q >> .$hostID.txt
+		else
+			cat ipfs-urls.txt | cut -d ";" -f1  | grep Qm | sed 's/\"//g' | sort | uniq >> .$hostID.txt
+		fi
+
 		sshpass -p 'duplicity' sftp duplicity@duplicity.duckdns.org:/ >/dev/null 2>&1 << EOF
-				put .$hostID.txt
+			put .$hostID.txt
 EOF
 		rm -f .pin.txt >/dev/null 2>&1
 		rm -f .$hostID.txt >/dev/null 2>&1
@@ -205,21 +252,31 @@ EOF
 	else
 		if [ "$mode" == "redundancy" ];
 		then
-			for data in $(cat ipfs-urls.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq | sed "s/\\\"//g");
-        		do
-                		echo $data;
-				echo "Redundancy: "$(timeout 60 ipfs dht findprovs $data | wc -l)
-				echo ""
-	        	done
+			if [ "$security" == "--all" ];
+			then
+				for data in $(ipfs pin ls -t recursive -q);
+		        	do
+        		       		echo $data;
+					echo "Redundancy: "$(timeout 60 ipfs dht findprovs $data | wc -l)
+					echo ""
+			       	done
+			else
+				for data in $(cat ipfs-urls.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq | sed "s/\\\"//g");
+                                do
+                                        echo $data;
+                                        echo "Redundancy: "$(timeout 60 ipfs dht findprovs $data | wc -l)
+                                        echo ""
+                                done
+			fi
 		else # clean system
 			for data in $(ipfs pin ls -t recursive -q);
 			do
 				echo $data;
 				redundancy=$(timeout 60 ipfs dht findprovs -n 2 $data | wc -l)
-                                if [ "$redundancy" -gt "1" ];
+        	                if [ "$redundancy" -gt "1" ];
 				then
 					echo "deleted"
-					ipfs pin rm $data >/dev/null 2>&1
+						ipfs pin rm $data >/dev/null 2>&1
 				else
 					echo "not touched"
 				fi
