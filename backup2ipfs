@@ -151,6 +151,10 @@ echo -e "$urls" | grep Qm | sort | uniq >> ipfs-urls.txt
 if [ "$mode" == "copy" ] && [ "$mode" == "move" ];
 then
 	# done!
+	if [ "$mode" == "move" ];
+	then
+		find -mindepth 1 -empty -delete >/dev/null 2>&1 &
+	fi
 	exit 0
 fi
 
