@@ -108,7 +108,7 @@ then
 				then
 					rm -rf "$item"
 				fi
-				urls=$(echo -e "$urls\n$ID;$item;http://localhost:8080/ipfs/$ID")
+				urls=$(echo -e "$urls\n$ID;$item;https://ipfs.io/ipfs/$ID")
 				echo -e "$ID;$item;http://localhost:8080/ipfs/$ID" >> ipfs-urls.txt
 			else
 				echo "error"
@@ -131,7 +131,7 @@ then
         	                then
                 	                rm -rf "$item"
                         	fi
-	                        urls=$(echo -e "$urls\n$ID;$item;http://localhost:8080/ipfs/$ID")
+	                        urls=$(echo -e "$urls\n$ID;$item;https://ipfs.io/ipfs/$ID")
         	                echo -e "$ID;$item;http://localhost:8080/ipfs/$ID" >> ipfs-urls.txt
                 	else
                         	echo "error"
