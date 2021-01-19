@@ -173,7 +173,7 @@ fi
 if [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ] && [ "$mode" != "clean" ];
 then
 	# symb links
-	for allIDs in $(cat ipfs-urls.txt | grep -v ^\#);
+	for allIDs in $(cat ipfs-urls.txt | grep -v ^\# | sort -R);
 	do
 		ID=$(echo $allIDs | cut -d';' -f1)
 		filePATH=$(echo $allIDs | cut -d';' -f2)
