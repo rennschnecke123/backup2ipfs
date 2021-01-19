@@ -108,8 +108,8 @@ then
 				then
 					rm -rf "$item"
 				fi
-				urls=$(echo -e "$urls\n$ID;$item;https://ipfs.io/ipfs/$ID")
-				echo -e "$ID;$item;https://ipfs.io/ipfs/$ID" >> ipfs-urls.txt
+				urls=$(echo -e "$urls\n$ID;$item;http://localhost:8080/ipfs/$ID")
+				echo -e "$ID;$item;http://localhost:8080/ipfs/$ID" >> ipfs-urls.txt
 			else
 				echo "error"
 			fi
@@ -131,8 +131,8 @@ then
         	                then
                 	                rm -rf "$item"
                         	fi
-	                        urls=$(echo -e "$urls\n$ID;$item;https://ipfs.io/ipfs/$ID")
-        	                echo -e "$ID;$item;https://ipfs.io/ipfs/$ID" >> ipfs-urls.txt
+	                        urls=$(echo -e "$urls\n$ID;$item;http://localhost:8080/ipfs/$ID")
+        	                echo -e "$ID;$item;http://localhost:8080/ipfs/$ID" >> ipfs-urls.txt
                 	else
                         	echo "error"
 	                fi
@@ -189,7 +189,7 @@ then
 			then
 				wget -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>/dev/null 
 			else
-				wget  -nc  -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID" >/dev/null 2>/dev/null
+				wget  -nc  -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>/dev/null
 			fi
 		fi
 		# move
