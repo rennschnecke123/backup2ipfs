@@ -156,13 +156,16 @@ cat << EOF > ipfs-urls.txt
 EOF
 echo -e "$urls" | grep Qm | sort | uniq | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH >> ipfs-urls.txt
 
+
+# delete empty files
+if [ "$mode" == "rebuild" ] || [ "$mode" == "move" ];
+then
+	find -mindepth 1 -empty -delete >/dev/null 2>&1
+fi
+
 if [ "$mode" == "copy" ] || [ "$mode" == "move" ];
 then
 	# done!
-	if [ "$mode" == "move" ];
-	then
-		find -mindepth 1 -empty -delete >/dev/null 2>&1 &
-	fi
 	exit 0
 fi
 
