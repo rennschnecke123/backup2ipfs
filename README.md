@@ -40,7 +40,8 @@ You need to install <i>sshpass</i>:<br>
 <br>
 <br>
 <br>
+ <!--
  for symbolic links ipfs need to be started with mount option!<br>
  ipfs daemon --mount &amp;
- 
+ -->
  <b>To store *non* gpg files set "--secOFF" with script start!</b>
