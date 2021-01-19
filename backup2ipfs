@@ -146,7 +146,7 @@ cat << EOF > ipfs-urls.txt
 #
 #######################################################################
 EOF
-echo -e "$urls" | grep Qm | sort | uniq >> ipfs-urls.txt
+echo -e "$urls" | grep Qm | sort | uniq | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH >> ipfs-urls.txt
 
 if [ "$mode" == "copy" ] || [ "$mode" == "move" ];
 then
