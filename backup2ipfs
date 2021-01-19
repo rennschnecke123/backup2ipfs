@@ -202,12 +202,12 @@ then
                 #        (cp -vans "$ipfsDIR/$ID" "$filePATH"  >/dev/null 2>&1)
 		#fi
 	done
-	if [ "$mode" == "rebuild" ];
-	then
-		find -mindepth 1 -empty -delete >/dev/null 2>&1
-		find -type l -print -exec cp "{}" "{}.tmp" \; -exec mv "{}.tmp" "{}" \;  2>/dev/null
-		find -mindepth 1 -empty -delete >/dev/null 2>&1 &
-	fi
+#	if [ "$mode" == "rebuild" ];
+#	then
+#		find -mindepth 1 -empty -delete >/dev/null 2>&1
+#		find -type l -print -exec cp "{}" "{}.tmp" \; -exec mv "{}.tmp" "{}" \;  2>/dev/null
+#		find -mindepth 1 -empty -delete >/dev/null 2>&1 &
+#	fi
 else 
 	if [ "$mode" == "pin" ];
 	then
