@@ -262,9 +262,9 @@ EOF
 			countIPFS=$maxPin
 		fi
 	
-		echo "repinning $countIPFS hashes"
-		echo "free space: $FREE"
-		echo "needed space: $minFreeSize4Pinning"
+		echo "$countIPFS hashes to re-pin"
+		echo "$FREE space free"
+		echo "$minFreeSize4Pinning space needed"
 
 
 		if [ "$FREE" -gt "$minFreeSize4Pinning" ];
@@ -297,6 +297,8 @@ EOF
                 	        fi
                         done
 			echo "stop"
+		else
+			echo "not enough space to re-pin"
 		fi
 	 
 
