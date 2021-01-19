@@ -59,7 +59,7 @@ function daemonize()
 		backup2ipfs pin --all >/dev/null 2>&1
 		sleep 3600
 		FREE=$(df ~/.ipfs| tail -1 | awk '{print $4}')
-                if [ "$FREE" -gt "$minFreeSize4Pinning" ];
+                if [ "$FREE" -lt "$minFreeSize4Pinning" ];
 		then
 			backup2ipfs clean >/dev/null 2>&1
 		fi
