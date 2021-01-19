@@ -96,7 +96,11 @@ then
 		for item in $(find ./ -mindepth 1 -type f -not -name \#\* -name \*.gpg)
 		do
 			echo $item
-			ID=$(ipfs add "$item" 2>/dev/null| tail -n1 | cut -d ' ' -f 2)
+			if [ "$mode" == "move" ];
+                        then
+                                find -mindepth 1 -empty -delete >/dev/null 2>&1
+                        fi
+			ID=$(ipfs add "$item" 2>/dev/null| tail -n1 | cut -d ' ' -f 2 | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH)
 			if [ "$ID" != "" ];
 			then
 				echo "done"
@@ -115,7 +119,11 @@ then
 	        for item in $(find ./ -mindepth 1 -type f -not -name \#\* -not -name ipfs-urls.txt)
         	do
                 	echo $item
-	                ID=$(ipfs add "$item" 2>/dev/null| tail -n1 | cut -d ' ' -f 2)
+			if [ "$mode" == "move" ];
+                        then
+				find -mindepth 1 -empty -delete >/dev/null 2>&1
+			fi
+	                ID=$(ipfs add "$item" 2>/dev/null| tail -n1 | cut -d ' ' -f 2 | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH)
         	        if [ "$ID" != "" ];
                 	then
                         	echo "done"
@@ -187,7 +195,9 @@ then
 	done
 	if [ "$mode" == "rebuild" ];
 	then
+		find -mindepth 1 -empty -delete >/dev/null 2>&1
 		find -type l -print -exec cp "{}" "{}.tmp" \; -exec mv "{}.tmp" "{}" \;  2>/dev/null
+		find -mindepth 1 -empty -delete >/dev/null 2>&1 &
 	fi
 else 
 	if [ "$mode" == "pin" ];
