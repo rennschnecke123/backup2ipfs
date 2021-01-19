@@ -11,7 +11,7 @@ ipfsDIR=/ipfs
 ipnsDIR=/ipns
 
 # just offer pinning when 10G space free
-minFreeSize4Pinning=10485760
+minFreeSize4Pinning=1048576
 
 IFS=$'\n'
 
@@ -116,7 +116,7 @@ then
 		done
 	else
 	# all files!
-	        for item in $(find ./ -mindepth 1 -type f -not -name \#\* -not -name ipfs-urls.txt)
+	        for item in $(find ./ -mindepth 1 -type f -not -name \#\* -not -name ipfs-urls.\*)
         	do
                 	echo $item
 			if [ "$mode" == "move" ];
@@ -155,6 +155,13 @@ cat << EOF > ipfs-urls.txt
 #######################################################################
 EOF
 echo -e "$urls" | grep Qm | sort | uniq | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH >> ipfs-urls.txt
+listID=$(ipfs add -rw ipfs-urls.txt 2>/dev/null | tail -n1 | cut -d ' ' -f 2 | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH)
+echo $listID
+cat << EOF > ipfs-urls.html
+<html><head>
+<script>if (window.location.href != "https://ipfs.io/ipfs/$listID/ipfs-urls.txt") {window.location.href = "https://ipfs.io/ipfs/$listID/ipfs-urls.txt";}</script>
+</head><body></body></htnl>
+EOF
 
 
 # delete empty files
@@ -166,6 +173,10 @@ fi
 if [ "$mode" == "copy" ] || [ "$mode" == "move" ];
 then
 	# done!
+	if [ "$security" != "--all" ];
+	then
+		firefox ipfs-urls.html >/dev/null 2>&1 &
+	fi
 	exit 0
 fi
 
