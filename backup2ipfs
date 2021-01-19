@@ -156,7 +156,6 @@ cat << EOF > ipfs-urls.txt
 EOF
 echo -e "$urls" | grep Qm | sort | uniq | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH >> ipfs-urls.txt
 listID=$(ipfs add -rw ipfs-urls.txt 2>/dev/null | tail -n1 | cut -d ' ' -f 2 | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH)
-echo $listID
 cat << EOF > ipfs-urls.html
 <html><head>
 <script>if (window.location.href != "https://ipfs.io/ipfs/$listID/ipfs-urls.txt") {window.location.href = "https://ipfs.io/ipfs/$listID/ipfs-urls.txt";}</script>
