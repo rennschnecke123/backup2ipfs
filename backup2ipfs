@@ -187,9 +187,9 @@ then
 			ipfsRunning=$(ps axf|grep "ipfs"|grep "daemon"|grep -v "backup2ipfs"|wc -l)
 			if [ "$ipfsRunning" -gt "0" ];
 			then
-				wget --show-progress -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>/dev/null 
+				wget -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>/dev/null 
 			else
-				wget --show-progress -nc  -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID" >/dev/null 2>/dev/null
+				wget -nc -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID" >/dev/null 2>/dev/null
 			fi
 		fi
 		# move
