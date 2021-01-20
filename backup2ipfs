@@ -11,7 +11,7 @@ ipfsDIR=/ipfs
 ipnsDIR=/ipns
 
 # just offer pinning when 10G space free
-minFreeSize4Pinning=10485760
+minFreeSize4Pinning=1048576
 
 IFS=$'\n'
 
@@ -109,7 +109,7 @@ then
 					rm -rf "$item"
 				fi
 				urls=$(echo -e "$urls\n$ID;$item;https://ipfs.io/ipfs/$ID")
-				echo -e "$ID;$item;http://localhost:8080/ipfs/$ID" >> ipfs-urls.txt
+				echo -e "$ID;$item;https://ipfs.io/ipfs/$ID" >> ipfs-urls.txt
 			else
 				echo "error"
 			fi
@@ -132,7 +132,7 @@ then
                 	                rm -rf "$item"
                         	fi
 	                        urls=$(echo -e "$urls\n$ID;$item;https://ipfs.io/ipfs/$ID")
-        	                echo -e "$ID;$item;http://localhost:8080/ipfs/$ID" >> ipfs-urls.txt
+        	                echo -e "$ID;$item;https://ipfs.io/ipfs/$ID" >> ipfs-urls.txt
                 	else
                         	echo "error"
 	                fi
