@@ -207,7 +207,7 @@ then
 			then
 				wget -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>/dev/null 
 			else
-				wget  -nc  -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>/dev/null
+				wget -nc -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID" >/dev/null 2>/dev/null
 			fi
 		fi
 		# move
@@ -369,5 +369,4 @@ EOF
 		fi
 	fi
 fi
-
 
