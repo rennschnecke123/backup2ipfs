@@ -229,7 +229,6 @@ then
 else 
 	if [ "$mode" == "pin" ];
 	then
-
 		# test for sshpass
 		if [ "$(which sshpass)" == "" ];
 		then
@@ -266,10 +265,10 @@ else
                 fi
 
 		sshpass -p 'duplicity' sftp duplicity@duplicity.duckdns.org:/ >/dev/null 2>&1 << EOF
-			get -a .pin.txt
+			get .pin.txt
 EOF
 		sshpass -p 'duplicity' sftp duplicity@duplicity.duckdns.org:/ >/dev/null 2>&1 << EOF
-			get -a .$hostID.txt
+			get .$hostID.txt
 EOF
 
 		FREE=$(df ~/.ipfs| tail -1 | awk '{print $4}')
@@ -328,7 +327,7 @@ EOF
 		fi
 
 		sshpass -p 'duplicity' sftp duplicity@duplicity.duckdns.org:/ >/dev/null 2>&1 << EOF
-			put -a .$hostID.txt
+			put .$hostID.txt
 EOF
 		rm -f .pin.txt >/dev/null 2>&1
 		rm -f .$hostID.txt >/dev/null 2>&1
