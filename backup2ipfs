@@ -297,7 +297,7 @@ EOF
                         	if [ "$daemonsRunning" -lt "1" ];
 	                        then
         		                # manual mode
-                        		echo "manual pinning"
+                        		echo "queue pinning"
 		                        if [ "$FREE" -gt "$minFreeSize4Pinning" ];
                 		        then
 			                        flock /tmp/pinExchange.flock timeout 3600 ipfs pin add $data >/dev/null 2>&1 &
