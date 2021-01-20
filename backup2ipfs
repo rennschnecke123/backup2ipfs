@@ -142,7 +142,7 @@ fi
 
 
 
-if [ "$mode" == "move" ] || [ "$mode" == "copy"];
+if [ "$mode" == "move" ] || [ "$mode" == "copy" ];
 then
 	cat << EOF > ipfs-urls.txt
 #######################################################################
@@ -369,4 +369,5 @@ EOF
 		fi
 	fi
 fi
+
 
