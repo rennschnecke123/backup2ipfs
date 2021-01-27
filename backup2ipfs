@@ -14,7 +14,8 @@ ipnsDIR=/ipns
 minFreeSize4Pinning=10485760
 
 IFS=$'\n'
-
+hostID=$(ipfs id -f="<id>")
+listID=""
 
 if [ "$mode" != "--help" ] && [ "$mode" != "copy" ] && [ "$mode" != "move" ] && [ "$mode" != "rebuild" ] && [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ] && [ "$mode" != "clean" ] && [ "$mode" != "daemon" ];
 then
@@ -25,9 +26,9 @@ fi
 if [ "$mode" == "--help" ];
 then
 	echo "Syntax:"
-	echo "backup2ipfs copy (--secOFF)"
+	echo "backup2ipfs copy (--secOFF / --emptyPlan)"
 	echo "-> copy data to ipfs"
-	echo "backup2ipfs move (--secOFF)"
+	echo "backup2ipfs move (--secOFF / --emptyPlan)"
 	echo "-> move data to ipfs"
 	echo "backup2ipfs rebuild"
 	echo "-> get data from ipfs"
@@ -169,6 +170,37 @@ EOF
 EOF
 	fi
 
+
+function listUpdate()
+{
+	# fetch pins
+	if [ "$security" == "--emptyPlan" ];
+	then
+		echo "<!-- BACKUP2IPFS-$hostID -->" > /tmp/back2ipfs.list 2>/dev/null
+	else
+		wget -O "/tmp/back2ipfs.list" "http://localhost:8080/ipns/$hostID" 2>/dev/null
+	fi
+	if [ "$(cat /tmp/back2ipfs.list | grep BACKUP2IPFS | wc -l)" -gt "0" ];
+	then
+		cat /tmp/back2ipfs.list | grep Qm | grep -v BACKUP2IPFS-$hostID | grep -v "$listID"  > /tmp/indexTMP.html 2>/dev/null
+	else
+		echo "" > /tmp/indexTMP.html 2>/dev/null
+	fi
+	# head
+	echo "<html><head><meta http-equiv=\"refresh\" content=\"60\"></head><body><h3>Backup2IPFS</h3><ul>" > /tmp/index.html 2>/dev/null
+	echo "<li><a href=\"/ipfs/$listID/ipfs-urls.txt\" target=\"_blank\">"$(date)"<br>"$(pwd)"</a></br><br>" >> /tmp/index.html 2>/dev/null
+	cat /tmp/indexTMP.html >> /tmp/index.html 2>/dev/null
+	echo "<!-- BACKUP2IPFS-$hostID -->" >> /tmp/index.html 2>/dev/null
+	echo "</ul></body></html>" >> /tmp/index.html 2>/dev/null
+
+	ipns=$(ipfs add -rw /tmp/index.html  2>/dev/null| tail -n1 | cut -d ' ' -f 2 | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH)
+	ipfs name publish "$ipns/index.html" >/dev/null 2>&1
+	rm /tmp/backup2ipfs.list >/dev/null 2>/dev/null
+	rm /tmp/index.html >/dev/null 2>/dev/null
+	rm /tmp/indexTMP.html >/dev/null 2>/dev/null
+}
+	listUpdate &
+
 fi
 
 # delete empty files
@@ -182,7 +214,7 @@ then
 	# done!
 	if [ "$security" != "--all" ];
 	then
-		firefox ipfs-urls.html >/dev/null 2>&1 &
+		firefox http://localhost:8080/ipns/$hostID >/dev/null 2>&1 &
 	fi
 	exit 0
 fi
@@ -237,7 +269,6 @@ else
 			exit 0
 		fi
 
-		hostID=$(ipfs id -f="<id>")
 		if [ "$hostID" == "" ];
 		then
 			echo "ipfs not running?"
