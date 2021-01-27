@@ -176,11 +176,11 @@ function listUpdate()
 	# fetch pins
 	if [ "$security" == "--emptyPlan" ];
 	then
-		echo "<!-- BACKUP2IPFS-$hostID -->" > /tmp/back2ipfs.list 2>/dev/null
+		echo "" > /tmp/back2ipfs.list 2>/dev/null
 	else
 		wget -O "/tmp/back2ipfs.list" "http://localhost:8080/ipns/$hostID" 2>/dev/null
 	fi
-	if [ "$(cat /tmp/back2ipfs.list | grep BACKUP2IPFS | wc -l)" -gt "0" ];
+	if [ "$(cat /tmp/back2ipfs.list | wc -l)" -gt "0" ];
 	then
 		cat /tmp/back2ipfs.list | grep Qm | grep -v BACKUP2IPFS-$hostID | grep -v "$listID"  > /tmp/indexTMP.html 2>/dev/null
 	else
