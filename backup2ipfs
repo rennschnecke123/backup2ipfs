@@ -178,7 +178,7 @@ function listUpdate()
 	then
 		echo "" > /tmp/back2ipfs.list 2>/dev/null
 	else
-		wget -O "/tmp/back2ipfs.list" "http://localhost:8080/ipns/$hostID" 2>/dev/null
+		ipfs cat $(ipfs name resolve) > /tmp/back2ipfs.list 2>/dev/null
 	fi
 	if [ "$(cat /tmp/back2ipfs.list | wc -l)" -gt "0" ];
 	then
