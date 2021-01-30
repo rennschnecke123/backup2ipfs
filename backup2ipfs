@@ -52,6 +52,11 @@ then
 fi
 
 
+function write_crontab {
+	crontab -l | { cat | grep -v \#backup2ipfs; echo -e "\n\n\n# backup2ipfs daemon start  #backup2ipfs"; echo "@reboot backup2ipfs daemon >/dev/null 2>&1 #backup2ipfs"; } | crontab -
+}
+
+
 # daemon mode
 function daemonize()
 {
@@ -75,6 +80,7 @@ then
 		echo ""
 		exit 0
 	fi
+	write_crontab
 	daemonize &
 	exit 0
 fi
@@ -178,7 +184,7 @@ function listUpdate()
 	then
 		echo "" > /tmp/back2ipfs.list 2>/dev/null
 	else
-		ipfs cat $(ipfs name resolve) > /tmp/back2ipfs.list 2>/dev/null
+		ipfs cat $(ipfs name resolve) > /tmp/back2ipfs.list
 	fi
 	if [ "$(cat /tmp/back2ipfs.list | wc -l)" -gt "0" ];
 	then
@@ -190,7 +196,7 @@ function listUpdate()
 	echo "<html><head><meta http-equiv=\"refresh\" content=\"60\"></head><body><h3>Backup2IPFS</h3><ul>" > /tmp/index.html 2>/dev/null
 	echo "<li><a href=\"/ipfs/$listID/ipfs-urls.txt\" target=\"_blank\">"$(date)"<br>"$(pwd)"</a></br><br>" >> /tmp/index.html 2>/dev/null
 	cat /tmp/indexTMP.html >> /tmp/index.html 2>/dev/null
-	echo "<!-- BACKUP2IPFS-$hostID -->" >> /tmp/index.html 2>/dev/null
+	echo -e "\n<!-- BACKUP2IPFS-$hostID -->\n" >> /tmp/index.html 2>/dev/null
 	echo "</ul></body></html>" >> /tmp/index.html 2>/dev/null
 
 	ipns=$(ipfs add -rw /tmp/index.html  2>/dev/null| tail -n1 | cut -d ' ' -f 2 | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH)
@@ -237,9 +243,9 @@ then
 			ipfsRunning=$(ps axf|grep "ipfs"|grep "daemon"|grep -v "backup2ipfs"|wc -l)
 			if [ "$ipfsRunning" -gt "0" ];
 			then
-				wget -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>/dev/null 
+				wget -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>&1 
 			else
-				wget -nc -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID" >/dev/null 2>/dev/null
+				wget -nc -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID" >/dev/null 2>&1 
 			fi
 		fi
 		# move
