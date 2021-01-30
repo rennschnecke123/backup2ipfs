@@ -53,7 +53,7 @@ fi
 
 
 function write_crontab {
-	crontab -l | { cat | grep -v \#backup2ipfs; echo -e "\n\n\n# backup2ipfs daemon start  #backup2ipfs"; echo "@reboot backup2ipfs daemon >/dev/null 2>&1 #backup2ipfs"; } | crontab -
+	crontab -l | { cat | grep -v \#backup2ipfs; echo -e "# backup2ipfs daemon start #backup2ipfs"; echo "@reboot backup2ipfs daemon --force >/dev/null 2>&1 #backup2ipfs"; } | crontab -
 }
 
 
