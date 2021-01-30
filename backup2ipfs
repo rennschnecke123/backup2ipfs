@@ -236,34 +236,12 @@ then
 		# rebuild
 		if [ "$mode" == "rebuild" ];
 		then
-#			echo $allIDs
 			echo "$filePATH"
 			createPATH=$(echo $filePATH | rev | cut -d'/' -f2- | rev)
 			mkdir -p "$createPATH" >/dev/null 2>&1
-			ipfsRunning=$(ps axf|grep "ipfs"|grep "daemon"|grep -v "backup2ipfs"|wc -l)
-			if [ "$ipfsRunning" -gt "0" ];
-			then
-				wget -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>&1 
-			else
-				wget -nc -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID" >/dev/null 2>&1 
-			fi
+			wget -nc -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID" >/dev/null 2>&1 
 		fi
-		# move
-		#if [ "$mode" == "move" ];
-                #then
-#                       echo $allIDs
-                #        echo "$filePATH"
-                #        createPATH=$(echo $filePATH | rev | cut -d'/' -f2- | rev)
-                #        mkdir -p "$createPATH" >/dev/null 2>&1
-                #        (cp -vans "$ipfsDIR/$ID" "$filePATH"  >/dev/null 2>&1)
-		#fi
 	done
-#	if [ "$mode" == "rebuild" ];
-#	then
-#		find -mindepth 1 -empty -delete >/dev/null 2>&1
-#		find -type l -print -exec cp "{}" "{}.tmp" \; -exec mv "{}.tmp" "{}" \;  2>/dev/null
-#		find -mindepth 1 -empty -delete >/dev/null 2>&1 &
-#	fi
 else 
 	if [ "$mode" == "pin" ];
 	then
