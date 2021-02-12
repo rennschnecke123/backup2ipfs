@@ -9,12 +9,13 @@ security=$2
 # ipfs+ipns 
 ipfsDIR=/ipfs
 ipnsDIR=/ipns
+ipfs=$(which ipfs)
 
 # just offer pinning when 10G space free
 minFreeSize4Pinning=10485760
 
 IFS=$'\n'
-hostID=$(ipfs id -f="<id>")
+hostID=$($ipfs id -f="<id>")
 listID=""
 
 if [ "$mode" != "--help" ] && [ "$mode" != "copy" ] && [ "$mode" != "move" ] && [ "$mode" != "rebuild" ] && [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ] && [ "$mode" != "clean" ] && [ "$mode" != "daemon" ];
@@ -107,7 +108,7 @@ then
                         then
                                 find -mindepth 1 -empty -delete >/dev/null 2>&1
                         fi
-			ID=$(ipfs add "$item" 2>/dev/null| tail -n1 | cut -d ' ' -f 2 | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH)
+			ID=$($ipfs add "$item" 2>/dev/null| tail -n1 | cut -d ' ' -f 2 | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH)
 			if [ "$ID" != "" ];
 			then
 				echo "done"
@@ -130,7 +131,7 @@ then
                         then
 				find -mindepth 1 -empty -delete >/dev/null 2>&1
 			fi
-	                ID=$(ipfs add "$item" 2>/dev/null| tail -n1 | cut -d ' ' -f 2 | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH)
+	                ID=$($ipfs add "$item" 2>/dev/null| tail -n1 | cut -d ' ' -f 2 | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH)
         	        if [ "$ID" != "" ];
                 	then
                         	echo "done"
@@ -168,7 +169,7 @@ EOF
 	echo -e "$urls" | grep Qm | sort | uniq | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH >> ipfs-urls.txt
 	if [ "security" != "--all" ];
 	then
-		listID=$(ipfs add -rw ipfs-urls.txt 2>/dev/null | tail -n1 | cut -d ' ' -f 2 | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH)
+		listID=$($ipfs add -rw ipfs-urls.txt 2>/dev/null | tail -n1 | cut -d ' ' -f 2 | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH)
 		cat << EOF > ipfs-urls.html
 <html><head>
 <script>if (window.location.href != "https://ipfs.io/ipfs/$listID/ipfs-urls.txt") {window.location.href = "https://ipfs.io/ipfs/$listID/ipfs-urls.txt";}</script>
@@ -184,7 +185,7 @@ function listUpdate()
 	then
 		echo "" > /tmp/back2ipfs.list 2>/dev/null
 	else
-		ipfs cat $(ipfs name resolve) > /tmp/back2ipfs.list
+		$ipfs cat $(ipfs name resolve) > /tmp/back2ipfs.list
 	fi
 	if [ "$(cat /tmp/back2ipfs.list | wc -l)" -gt "0" ];
 	then
@@ -199,8 +200,8 @@ function listUpdate()
 	echo -e "\n<!-- BACKUP2IPFS-$hostID -->\n" >> /tmp/index.html 2>/dev/null
 	echo "</ul></body></html>" >> /tmp/index.html 2>/dev/null
 
-	ipns=$(ipfs add -rw /tmp/index.html  2>/dev/null| tail -n1 | cut -d ' ' -f 2 | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH)
-	ipfs name publish "$ipns/index.html" >/dev/null 2>&1
+	ipns=$($ipfs add -rw /tmp/index.html  2>/dev/null| tail -n1 | cut -d ' ' -f 2 | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH)
+	$ipfs name publish "$ipns/index.html" >/dev/null 2>&1
 	rm /tmp/backup2ipfs.list >/dev/null 2>/dev/null
 	rm /tmp/index.html >/dev/null 2>/dev/null
 	rm /tmp/indexTMP.html >/dev/null 2>/dev/null
@@ -261,7 +262,7 @@ else
 
 		if [ "$security" == "--all" ];
 		then
-			countIPFS=$(ipfs pin ls -t recursive -q | wc -l)
+			countIPFS=$($ipfs pin ls -t recursive -q | wc -l)
 		else
 			countIPFS=$(cat ipfs-urls.txt | grep Qm | wc -l)
 		fi
@@ -314,17 +315,17 @@ EOF
                         		echo "queue pinning"
 		                        if [ "$FREE" -gt "$minFreeSize4Pinning" ];
                 		        then
-			                        flock /tmp/pinExchange.flock timeout 3600 ipfs pin add $data >/dev/null 2>&1 &
+			                        flock /tmp/pinExchange.flock timeout 3600 $ipfs pin add $data >/dev/null 2>&1 &
                         		fi
 	                        else
         		                # daemon mode
                         		echo "daemon pinning"
 		                        if [ "$FREEdaemon" -gt "$minFreeSize4Pinning" ];
                 		        then
-			                        timeout 3600 ipfs pin add $data
+			                        timeout 3600 $ipfs pin add $data
                         		else
-			                        timeout 3600 ipfs pin add $data
-                        			ipfs pin rm $data
+			                        timeout 3600 $ipfs pin add $data
+                        			$ipfs pin rm $data
 		                        fi
                 	        fi
                         done
@@ -336,7 +337,7 @@ EOF
 
 		if [ "$security" == "--all" ];
 		then
-			ipfs pin ls -t recursive -q >> .$hostID.txt
+			$ipfs pin ls -t recursive -q >> .$hostID.txt
 		else
 			cat ipfs-urls.txt | cut -d ";" -f1  | grep Qm | sed 's/\"//g' | sort | uniq >> .$hostID.txt
 		fi
@@ -353,29 +354,29 @@ EOF
 		then
 			if [ "$security" == "--all" ];
 			then
-				for data in $(ipfs pin ls -t recursive -q);
+				for data in $($ipfs pin ls -t recursive -q);
 		        	do
         		       		echo $data;
-					echo "Redundancy: "$(timeout 60 ipfs dht findprovs $data 2>/dev/null | wc -l)
+					echo "Redundancy: "$(timeout 60 $ipfs dht findprovs $data 2>/dev/null | wc -l)
 					echo ""
 			       	done
 			else
 				for data in $(cat ipfs-urls.txt | cut -d ";" -f1 | grep Qm | sort -R| uniq | sed "s/\\\"//g");
                                 do
                                         echo $data;
-                                        echo "Redundancy: "$(timeout 60 ipfs dht findprovs $data 2>/dev/null | wc -l)
+                                        echo "Redundancy: "$(timeout 60 $ipfs dht findprovs $data 2>/dev/null | wc -l)
                                         echo ""
                                 done
 			fi
 		else # clean system
-			for data in $(ipfs pin ls -t recursive -q);
+			for data in $($ipfs pin ls -t recursive -q);
 			do
 				echo $data;
-				redundancy=$(timeout 60 ipfs dht findprovs -n 2 $data 2>/dev/null | wc -l)
+				redundancy=$(timeout 60 $ipfs dht findprovs -n 2 $data 2>/dev/null | wc -l)
         	                if [ "$redundancy" -gt "1" ];
 				then
 					echo "deleted"
-						ipfs pin rm $data >/dev/null 2>&1
+						$ipfs pin rm $data >/dev/null 2>&1
 				else
 					echo "not touched"
 				fi
