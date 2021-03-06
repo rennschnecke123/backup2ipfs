@@ -101,7 +101,7 @@ then
 	# only gpg files!
 	if [ "$security" != "--secOFF" ];
 	then
-		for item in $(find ./ -mindepth 1 -type f -not -name \#\* -name \*.gpg)
+		for item in $(find ./ -mindepth 1 -type f -not -name \#\* -name \*.gpg | sort -R)
 		do
 			echo $item
 			if [ "$mode" == "move" ];
@@ -124,7 +124,7 @@ then
 		done
 	else
 	# all files!
-	        for item in $(find ./ -mindepth 1 -type f -not -name \#\* -not -name ipfs-urls.\*)
+	        for item in $(find ./ -mindepth 1 -type f -not -name \#\* -not -name ipfs-urls.\* | sort -R)
         	do
                 	echo $item
 			if [ "$mode" == "move" ];
@@ -180,31 +180,35 @@ EOF
 
 function listUpdate()
 {
-	# fetch pins
-	if [ "$security" == "--emptyPlan" ];
-	then
-		echo "" > /tmp/back2ipfs.list 2>/dev/null
-	else
-		$ipfs cat $(ipfs name resolve) > /tmp/back2ipfs.list
-	fi
-	if [ "$(cat /tmp/back2ipfs.list | wc -l)" -gt "0" ];
-	then
-		cat /tmp/back2ipfs.list | grep Qm | grep -v BACKUP2IPFS-$hostID | grep -v "$listID"  > /tmp/indexTMP.html 2>/dev/null
-	else
-		echo "" > /tmp/indexTMP.html 2>/dev/null
-	fi
-	# head
-	echo "<html><head><meta http-equiv=\"refresh\" content=\"60\"></head><body><h3>Backup2IPFS</h3><ul>" > /tmp/index.html 2>/dev/null
-	echo "<li><a href=\"/ipfs/$listID/ipfs-urls.txt\" target=\"_blank\">"$(date)"<br>"$(pwd)"</a></br><br>" >> /tmp/index.html 2>/dev/null
-	cat /tmp/indexTMP.html >> /tmp/index.html 2>/dev/null
-	echo -e "\n<!-- BACKUP2IPFS-$hostID -->\n" >> /tmp/index.html 2>/dev/null
-	echo "</ul></body></html>" >> /tmp/index.html 2>/dev/null
+        # fetch pins
+        if [ "$security" == "--emptyPlan" ];
+        then
+                echo "" > /tmp/back2ipfs.list 2>/dev/null
+        else
+		ipfsAddress=$($ipfs cat $(ipfs name resolve) | cut -d'"' -f2 | cut -d'/' -f5)
+                $ipfs cat "$ipfsAddress/index.html" > /tmp/back2ipfs.list
+        fi
+        if [ "$(cat /tmp/back2ipfs.list | wc -l)" -gt "0" ];
+        then
+                cat /tmp/back2ipfs.list | grep Qm | grep -v BACKUP2IPFS-$hostID | grep -v "$listID"  > /tmp/indexTMP.html 2>/dev/null
+        else
+                echo "" > /tmp/indexTMP.html 2>/dev/null
+        fi
+        # head
+        echo "<html><head><meta http-equiv=\"refresh\" content=\"60\"></head><body><h3>Backup2IPFS</h3><ul>" > /tmp/index.html 2>/dev/null
+        echo "<li><a href=\"/ipfs/$listID/ipfs-urls.txt\" target=\"_blank\">"$(date)"<br>"$(pwd)"</a></br><br>" >> /tmp/index.html 2>/dev/null
+        cat /tmp/indexTMP.html >> /tmp/index.html 2>/dev/null
+        echo -e "\n<!-- BACKUP2IPFS-$hostID -->\n" >> /tmp/index.html 2>/dev/null
+        echo "</ul></body></html>" >> /tmp/index.html 2>/dev/null
 
-	ipns=$($ipfs add -rw /tmp/index.html  2>/dev/null| tail -n1 | cut -d ' ' -f 2 | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH)
-	$ipfs name publish "$ipns/index.html" >/dev/null 2>&1
-	rm /tmp/backup2ipfs.list >/dev/null 2>/dev/null
-	rm /tmp/index.html >/dev/null 2>/dev/null
-	rm /tmp/indexTMP.html >/dev/null 2>/dev/null
+        ipns=$($ipfs add -rw /tmp/index.html  2>/dev/null| tail -n1 | cut -d ' ' -f 2 | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH)
+        echo "<script>if (window.location.href != \"https://ipfs.io/ipfs/"$ipns"/index.html\") {window.location.href = \"https://ipfs.io/ipfs/"$ipns"/index.html\";}</script>" > /tmp/ipns.html
+        cat /tmp/ipns.html > /tmp/index.html 
+        ipfsAddress=$($ipfs add -rw /tmp/index.html  2>/dev/null| tail -n1 | cut -d ' ' -f 2 | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH)
+        $ipfs name publish "$ipfsAddress/index.html" >/dev/null 2>&1
+        rm /tmp/backup2ipfs.list >/dev/null 2>/dev/null
+        rm /tmp/index.html >/dev/null 2>/dev/null
+        rm /tmp/indexTMP.html >/dev/null 2>/dev/null
 }
 	listUpdate &
 
@@ -384,4 +388,3 @@ EOF
 		fi
 	fi
 fi
-
