@@ -185,7 +185,7 @@ function listUpdate()
         then
                 echo "" > /tmp/back2ipfs.list 2>/dev/null
         else
-		ipfsAddress=$($ipfs cat $(ipfs name resolve) | cut -d'"' -f2 | cut -d'/' -f5)
+		ipfsAddress=$($ipfs cat $($ipfs name resolve) | cut -d'"' -f2 | cut -d'/' -f5)
                 $ipfs cat "$ipfsAddress/index.html" > /tmp/back2ipfs.list
         fi
         if [ "$(cat /tmp/back2ipfs.list | wc -l)" -gt "0" ];
