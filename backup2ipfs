@@ -9,7 +9,7 @@ security=$2
 # ipfs+ipns 
 ipfsDIR=/ipfs
 ipnsDIR=/ipns
-ipfs=$(which ipfs)
+ipfs='/usr/local/bin/ipfs'
 
 # just offer pinning when 10G space free
 minFreeSize4Pinning=10485760
