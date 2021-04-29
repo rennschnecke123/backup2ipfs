@@ -18,7 +18,7 @@ IFS=$'\n'
 hostID=$($ipfs id -f="<id>")
 listID=""
 
-if [ "$mode" != "--help" ] && [ "$mode" != "copy" ] && [ "$mode" != "move" ] && [ "$mode" != "rebuild" ] && [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ] && [ "$mode" != "clean" ] && [ "$mode" != "daemon" ];
+if [ "$mode" != "--help" ] && [ "$mode" != "copy" ] && [ "$mode" != "move" ] && [ "$mode" != "rebuild" ] && [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ] && [ "$mode" != "clean" ] && [ "$mode" != "daemon" ] && [ "$mode" != "import" ];
 then
 	mode="--help"
 fi
@@ -29,18 +29,26 @@ then
 	echo "Syntax:"
 	echo "backup2ipfs copy (--secOFF / --emptyPlan)"
 	echo "-> copy data to ipfs"
+	echo ""
 	echo "backup2ipfs move (--secOFF / --emptyPlan)"
 	echo "-> move data to ipfs"
+	echo ""
 	echo "backup2ipfs rebuild"
 	echo "-> get data from ipfs"
+	echo ""
 	echo "backup2ipfs pin (--all)"
 	echo "-> pin data to local ipfs server"
+	echo ""
 	echo "backup2ipfs redundancy (--all)"
         echo "-> calculate redundancy of hashes"
+	echo ""
 	echo "backup2ipfs clean"
         echo "-> clean system/delete very redundant data"
 	echo "-> You need to start:"
 	echo "-> 'ipfs repo gc' to really delete items from disk!"
+	echo ""
+	echo "backup2ipfs import"
+	echo "-> import hashes to local ipfs"
 	echo ""
 	echo "backup2ipfs daemon"
 	echo "-> starts backup2ipfs as pinning daemon process"
@@ -86,7 +94,11 @@ then
 	exit 0
 fi
 
-
+if [ "$mode" == "import" ];
+then
+	for data in $(cat ipfs-urls.txt| cut -d ";" -f1 | grep Qm | sed "s/\\\"//g"); do echo $data; ipfs pin add --progress $data; done
+	exit 0
+fi
 
 
 # recreate local list
@@ -95,7 +107,7 @@ cp -f ipfs-urls.txt ipfs-urls.txt.tmp && mv -f ipfs-urls.txt.tmp ipfs-urls.txt
 # read old urls
 urls=$(cat ipfs-urls.txt | grep -v ^\# | grep Qm)
 
-if [ "$mode" != "rebuild" ] && [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ] && [ "$mode" != "clean" ];
+if [ "$mode" != "rebuild" ] && [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ] && [ "$mode" != "clean" ] && [ "$mode" != "import" ];
 then
 	# push to ipfs
 	# only gpg files!
@@ -244,7 +256,7 @@ then
 			echo "$filePATH"
 			createPATH=$(echo $filePATH | rev | cut -d'/' -f2- | rev)
 			mkdir -p "$createPATH" >/dev/null 2>&1
-			wget -nc -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID" >/dev/null 2>&1 
+			wget -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>&1 
 		fi
 	done
 else 
