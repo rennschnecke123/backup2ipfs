@@ -96,7 +96,7 @@ fi
 
 if [ "$mode" == "import" ];
 then
-	for data in $(cat ipfs-urls.txt| cut -d ";" -f1 | grep Qm | sed "s/\\\"//g"); do echo $data; ipfs pin add --progress $data; done
+	for data in $(cat ipfs-urls.txt| cut -d ";" -f1 | grep Qm | sed "s/\\\"//g"); do echo $data; $ipfs pin add --progress $data; done
 	exit 0
 fi
 
