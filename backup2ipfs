@@ -96,7 +96,7 @@ fi
 
 if [ "$mode" == "import" ];
 then
-	for data in $(cat ipfs-urls.txt| cut -d ";" -f1 | grep Qm | sed "s/\\\"//g"); do echo $data; $ipfs pin add --progress $data; done
+	for data in $(cat ipfs-urls.txt| cut -d ";" -f1 | grep Qm | sort -R | sed "s/\\\"//g"); do echo $data; $ipfs pin add --progress $data; done
 	exit 0
 fi
 
@@ -202,12 +202,12 @@ function listUpdate()
         fi
         if [ "$(cat /tmp/back2ipfs.list | wc -l)" -gt "0" ];
         then
-                cat /tmp/back2ipfs.list | grep Qm | grep -v BACKUP2IPFS-$hostID | grep -v "$listID"  > /tmp/indexTMP.html 2>/dev/null
+                cat /tmp/back2ipfs.list | grep Qm | grep -v BACKUP2IPFS-$hostID | grep -v "$listID" | grep -v "$hostID"  > /tmp/indexTMP.html 2>/dev/null
         else
                 echo "" > /tmp/indexTMP.html 2>/dev/null
         fi
         # head
-        echo "<html><head><meta http-equiv=\"refresh\" content=\"60\"></head><body><h3>Backup2IPFS</h3><ul>" > /tmp/index.html 2>/dev/null
+        echo "<html><head><meta http-equiv=\"refresh\" content=\"60; URL=https://ipfs.io/ipns/$hostID\"></head><body><h3>Backup2IPFS</h3><ul>" > /tmp/index.html 2>/dev/null
         echo "<li><a href=\"/ipfs/$listID/ipfs-urls.txt\" target=\"_blank\">"$(date)"<br>"$(pwd)"</a></br><br>" >> /tmp/index.html 2>/dev/null
         cat /tmp/indexTMP.html >> /tmp/index.html 2>/dev/null
         echo -e "\n<!-- BACKUP2IPFS-$hostID -->\n" >> /tmp/index.html 2>/dev/null
@@ -256,7 +256,7 @@ then
 			echo "$filePATH"
 			createPATH=$(echo $filePATH | rev | cut -d'/' -f2- | rev)
 			mkdir -p "$createPATH" >/dev/null 2>&1
-			wget -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>&1 
+			wget --timeout=60 --tries=1 -nc -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID" >/dev/null 2>&1 
 		fi
 	done
 else 
