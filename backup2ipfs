@@ -256,7 +256,7 @@ then
 			echo "$filePATH"
 			createPATH=$(echo $filePATH | rev | cut -d'/' -f2- | rev)
 			mkdir -p "$createPATH" >/dev/null 2>&1
-			wget --timeout=60 --tries=1 -nc -nH --cut-dirs=2 -O "$filePATH" "https://ipfs.io/ipfs/$ID" >/dev/null 2>&1 
+			wget --timeout=60 --tries=1 -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>&1 
 		fi
 	done
 else 
