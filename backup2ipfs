@@ -12,7 +12,7 @@ ipnsDIR=/ipns
 ipfs='/usr/local/bin/ipfs'
 
 # just offer pinning when 10G space free
-minFreeSize4Pinning=10485760
+minFreeSize4Pinning=10485700
 
 IFS=$'\n'
 hostID=$($ipfs id -f="<id>")
@@ -102,7 +102,7 @@ fi
 
 
 # recreate local list
-cp -f ipfs-urls.txt ipfs-urls.txt.tmp && mv -f ipfs-urls.txt.tmp ipfs-urls.txt
+cat ipfs-urls.txt | sort | uniq > ipfs-urls.txt.tmp && mv -f ipfs-urls.txt.tmp ipfs-urls.txt
 
 # read old urls
 urls=$(cat ipfs-urls.txt | grep -v ^\# | grep Qm)
@@ -207,7 +207,7 @@ function listUpdate()
                 echo "" > /tmp/indexTMP.html 2>/dev/null
         fi
         # head
-        echo "<html><head><meta http-equiv=\"refresh\" content=\"60; URL=http://localhost:8080/ipns/$hostID\"></head><body><h3>Backup2IPFS</h3><ul>" > /tmp/index.html 2>/dev/null
+        echo "<html><head><meta http-equiv=\"refresh\" content=\"60; URL=https://ipfs.io/ipns/$hostID\"></head><body><h3>Backup2IPFS</h3><ul>" > /tmp/index.html 2>/dev/null
         echo "<li><a href=\"/ipfs/$listID/ipfs-urls.txt\" target=\"_blank\">"$(date)"<br>"$(pwd)"</a></br><br>" >> /tmp/index.html 2>/dev/null
         cat /tmp/indexTMP.html >> /tmp/index.html 2>/dev/null
         echo -e "\n<!-- BACKUP2IPFS-$hostID -->\n" >> /tmp/index.html 2>/dev/null
@@ -256,7 +256,12 @@ then
 			echo "$filePATH"
 			createPATH=$(echo $filePATH | rev | cut -d'/' -f2- | rev)
 			mkdir -p "$createPATH" >/dev/null 2>&1
-			wget --no-proxy --timeout=60 --tries=1 -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>&1
+			#wget --no-proxy --timeout=60 --tries=1 -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>&1
+			if [ ! -e "$filePATH" ];
+			then
+				ipfs get -o "$filePATH" $ID 
+			fi
+
 		fi
 	done
 else 
@@ -341,7 +346,7 @@ EOF
 			                        timeout 3600 $ipfs pin add $data
                         		else
 			                        timeout 3600 $ipfs pin add $data
-                        			$ipfs pin rm $data
+                        			#$ipfs pin rm $data
 		                        fi
                 	        fi
                         done
