@@ -12,7 +12,7 @@ ipnsDIR=/ipns
 ipfs='/usr/local/bin/ipfs'
 
 # just offer pinning when 10G space free
-minFreeSize4Pinning=10485700
+minFreeSize4Pinning=10485760
 
 IFS=$'\n'
 hostID=$($ipfs id -f="<id>")
@@ -102,10 +102,14 @@ fi
 
 
 # recreate local list
-cat ipfs-urls.txt | sort | uniq > ipfs-urls.txt.tmp && mv -f ipfs-urls.txt.tmp ipfs-urls.txt
+if [ "$security" != "--all" ];
+then
+	cp -f ipfs-urls.txt ipfs-urls.txt.tmp && mv -f ipfs-urls.txt.tmp ipfs-urls.txt
 
-# read old urls
-urls=$(cat ipfs-urls.txt | grep -v ^\# | grep Qm)
+	# read old urls
+	urls=$(cat ipfs-urls.txt | grep -v ^\# | grep Qm)
+
+fi
 
 if [ "$mode" != "rebuild" ] && [ "$mode" != "pin" ] && [ "$mode" != "redundancy" ] && [ "$mode" != "clean" ] && [ "$mode" != "import" ];
 then
@@ -179,7 +183,7 @@ then
 #######################################################################
 EOF
 	echo -e "$urls" | grep Qm | sort | uniq | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH >> ipfs-urls.txt
-	if [ "security" != "--all" ];
+	if [ "$security" != "--all" ];
 	then
 		listID=$($ipfs add -rw ipfs-urls.txt 2>/dev/null | tail -n1 | cut -d ' ' -f 2 | grep -v QmbFMke1KXqnYyBBWxB74N4c5SBnJMVAiMNRcGu6x1AwQH)
 		cat << EOF > ipfs-urls.html
@@ -256,11 +260,12 @@ then
 			echo "$filePATH"
 			createPATH=$(echo $filePATH | rev | cut -d'/' -f2- | rev)
 			mkdir -p "$createPATH" >/dev/null 2>&1
-			#wget --no-proxy --timeout=60 --tries=1 -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>&1
-			if [ ! -e "$filePATH" ];
-			then
-				ipfs get -o "$filePATH" $ID 
-			fi
+			wget --no-proxy --timeout=60 --tries=1 -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>&1
+			timeout 3600
+                        if [ ! -e "$filePATH" ];
+                        then
+                                timeout 3600 ipfs get -o "$filePATH" $ID
+                        fi
 
 		fi
 	done
