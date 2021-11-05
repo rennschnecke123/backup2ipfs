@@ -260,8 +260,7 @@ then
 			echo "$filePATH"
 			createPATH=$(echo $filePATH | rev | cut -d'/' -f2- | rev)
 			mkdir -p "$createPATH" >/dev/null 2>&1
-			wget --no-proxy --timeout=60 --tries=1 -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>&1
-			timeout 3600
+			#wget --no-proxy --timeout=60 --tries=1 -nc -nH --cut-dirs=2 -O "$filePATH" "http://localhost:8080/ipfs/$ID" >/dev/null 2>&1
                         if [ ! -e "$filePATH" ];
                         then
                                 timeout 3600 ipfs get -o "$filePATH" $ID
