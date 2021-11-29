@@ -16,7 +16,6 @@ So just store public or encrypted data!<br><br>
 <br>
 <b>*backup2ipfs rebuild</b><br>
 -&gt; get data from ipfs<br>
-This even works with no local ipfs server running!!<br>
 <br>
 <b>*backup2ipfs pin (--all)</b><br>
 -&gt; exchange hashes for pinning (redundancy)<br>
